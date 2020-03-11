@@ -470,11 +470,11 @@ public class PortalController {
 		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
 		if(sessaoUsuario!=null){
 
-			ClienteDetalhado clienteDetalhado = new ClienteDetalhado();
-			clienteDetalhado = new JdbcConsultaCliente().getClienteDetalhado(request.getParameter("cnpj"));
-			
-			
-			model.addAttribute("clienteDetalhado", clienteDetalhado);
+			if(request.getParameter("cnpj")!=null) {
+				ClienteDetalhado clienteDetalhado = new ClienteDetalhado();
+				clienteDetalhado = new JdbcConsultaCliente().getClienteDetalhado(request.getParameter("cnpj"));
+				model.addAttribute("clienteDetalhado", clienteDetalhado);
+			}
 			model.addAttribute("logado", sessaoUsuario);
 			
 			return "consCliente";

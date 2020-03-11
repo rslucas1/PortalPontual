@@ -40,9 +40,9 @@ public class JdbcConsultaCliente {
 				" e.bairro,\r\n" + 
 				" e.municipio, \r\n" + 
 				" e.distrito,\r\n" + 
-				" c.situacao,\r\n" + 
-				" c.cd_vend\r\n" + 
-				"\r\n" + 
+				" c.ativo,\r\n" + 
+				" c.cd_vend,\r\n" + 
+				"CONVERT(varchar(10), c.dt_ult_compra, 103) as dt_ult_compra\r\n" + 
 				" \r\n" + 
 				"from cliente c \r\n" + 
 				"\r\n" + 
@@ -59,42 +59,57 @@ public class JdbcConsultaCliente {
 				"on c.cd_area = a.cd_area\r\n" + 
 				"\r\n" + 
 				" where c.cgc_cpf='"+cnpj+"' and  e.tp_end='FA'";
+				
+				System.out.println(sql);
+		
+				
 		try {
 			
 			PreparedStatement stmt = this.conectionSqlServer.prepareStatement(sql);
 			
 			ResultSet rs = stmt.executeQuery();
+			boolean cadastrado=false;
 			
-			while (rs.next()) {
-				clienteDetalhado.setCd_cliente(rs.getInt("cd_clien"));
-				clienteDetalhado.setDesc_cliente(rs.getString("descricao"));
-				clienteDetalhado.setTp_Cli(rs.getString("tp_cli"));
-				clienteDetalhado.setFantasia(rs.getString("fantasia"));
-				clienteDetalhado.setCgc_cpf(rs.getString("cgc_cpf"));
-				clienteDetalhado.setLogradouro(rs.getString("logradouro"));
-				clienteDetalhado.setNumero(rs.getString("numero"));
-				clienteDetalhado.setCep(rs.getString("cep"));
-				clienteDetalhado.setSegmento(rs.getString("segmento"));
-				clienteDetalhado.setArea(rs.getString("area"));
-				clienteDetalhado.setBairro(rs.getString("bairro"));
-				clienteDetalhado.setMunicipio(rs.getString("municipio"));
-				clienteDetalhado.setDistrito(rs.getString("distrito"));
-				clienteDetalhado.setGrupoCli(rs.getString("grupo"));
-				String situacao = (rs.getString("situacao")=="1") ? "inATIVO" : "ATIVO";
-				clienteDetalhado.setSituacao(situacao);
-				String vendedor = rs.getString("cd_vend");
-				if(vendedor.equals("990LG001")) {
-					clienteDetalhado.setVendedor("Cliente na base Inativa");					
-				}else if(vendedor.equals("null")) {
-					clienteDetalhado.setVendedor("Cliente não cadastrado no Sistema");
-				}else {
-					clienteDetalhado.setVendedor(vendedor);
+				while (rs.next()) {
+					cadastrado=true;
+					
+					clienteDetalhado.setCd_cliente(rs.getInt("cd_clien"));
+					clienteDetalhado.setDesc_cliente(rs.getString("descricao"));
+					clienteDetalhado.setTp_Cli(rs.getString("tp_cli"));
+					clienteDetalhado.setFantasia(rs.getString("fantasia"));
+					clienteDetalhado.setCgc_cpf(rs.getString("cgc_cpf"));
+					clienteDetalhado.setLogradouro(rs.getString("logradouro"));
+					clienteDetalhado.setNumero(rs.getString("numero"));
+					clienteDetalhado.setCep(rs.getString("cep"));
+					clienteDetalhado.setSegmento(rs.getString("segmento"));
+					clienteDetalhado.setArea(rs.getString("area"));
+					clienteDetalhado.setBairro(rs.getString("bairro"));
+					clienteDetalhado.setMunicipio(rs.getString("municipio"));
+					clienteDetalhado.setDistrito(rs.getString("distrito"));
+					clienteDetalhado.setGrupoCli(rs.getString("grupo"));
+					String situacao = (rs.getString("ativo").equals("1")) ? "ATIVO" : "INATIVO";
+					clienteDetalhado.setSituacao(situacao);
+					String vendedor = rs.getString("cd_vend");
+					clienteDetalhado.setDtUltimaCompra(rs.getString("dt_ult_compra"));
+					
+					
+					
+					if(vendedor.equals("990LG001")) {
+						clienteDetalhado.setVendedor("***CLIENTE ASSOCIADO A BASE INATIVA***");					
+					}else {
+						clienteDetalhado.setVendedor(vendedor);
+					}
+					
+	
 				}
 				
-
-			}
+				if(cadastrado==false) {
+					clienteDetalhado.setVendedor("CNPJ NÃO CADASTRADO EM NOSSA BASE");
+					clienteDetalhado.setDesc_cliente("CNPJ NÃO CADASTRADO EM NOSSA BASE");
+					
+				}
 			
-			
+			System.out.println(cadastrado);
 			
 			
 		}catch(SQLException e) {

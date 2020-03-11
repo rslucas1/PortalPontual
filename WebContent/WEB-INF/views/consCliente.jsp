@@ -17,7 +17,7 @@
 			<div class="linha-detcli">
 				<div class="">
 					<H3 class="">
-						PLANO DE COBERTURA - Consulta de Cliente</br>
+						Consulta de Cliente</br>
 					</H3>
 					<form method="post" action="consCliente">
 						<input name="cnpj" type="text" id="cnpj" placeholder="Digite o CNPJ"/>
@@ -42,6 +42,14 @@
 						<input class="form-control form-control-sm " type="text" value="${clienteDetalhado.vendedor}"readonly size="40">
 					</div>
 				</div>
+				
+				<div class="inline">
+					<div>data da ultima compra</div>
+					<div class="inline">
+						<input class="form-control form-control-sm " type="text" value="${clienteDetalhado.dtUltimaCompra}"readonly size="19">
+					</div>
+				</div>
+				
 			</div>	
 				
 			<div class="linha-detcli">
