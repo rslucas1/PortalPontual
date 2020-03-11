@@ -1,0 +1,357 @@
+html {
+	
+}
+
+body {
+	position: absolute;
+	background-color: #DCDCDC;
+	width: 100%;
+	margin: 0;
+}
+
+.cabecalho {
+	position: fixed;
+	background-color: #1E90FF;
+	color: #ffffff;
+	border-bottom: 2px solid #FFFF00;
+	width: 100%;
+	height: 80px;
+}
+
+.logoCabecalho {
+	position: relative;
+	width: 70px;
+	margin-left: 70px;
+}
+
+.img_logo_cabecalho {
+	height: 70px;
+}
+
+.img_addusr{
+	height: 40px;	
+}
+
+.descUsuario {
+	position: absolute;
+	top: 20px;
+	margin-left: 20px;
+	width: 70%;
+	font-size: 18px;
+}
+
+.campo-botoes {
+	padding-top: 15px;
+	padding-bottom: 15px;
+	margin-bottom: 40px;
+}
+
+.botaocss {
+	margin-left: 20%;
+	width: 180px;
+	height: 70px;
+}
+
+.botoes-pos {
+	padding-left: 18%;
+}
+
+.subPainel900 {
+	width: 900px;
+	margin: 30px;
+}
+
+.subPainel1100 {
+	width: 1100px;
+	margin: 30px;
+}
+
+.painel-pos {
+	padding: 30px;
+}
+
+.tabela-pos {
+	font-size: 12px;
+}
+
+.painel-navegacao {
+	padding-top: 20px;
+	background-size: cover;
+	background-attachment: fixed;
+	background-color: #ffffff; -
+	-background-color: RED;
+	width: 98%; -
+	-height: 600px;
+}
+
+.footer { -
+	-position: absolute; -
+	-bottom: 0;
+	height: 130px;
+	background-color: navy;
+	color: #ffffff;
+	text-align: center;
+}
+
+.inline {
+	display: inline-block;
+}
+
+.central-titulo {
+	margin-top: -15px;
+	margin-bottom: 10px;
+	margin-left: 35%;
+}
+
+.central-relatorio {
+	margin-top: -15px;
+	margin-left: 12%;
+	margin-bottom: 20px;
+}
+
+.tabela {
+	padding-left: 60px;
+	padding-right: 60px;
+	margin-left: 80px;
+	margin-right: 80px;
+	/* 	border: 1px solid red; */
+}
+
+#radio { -
+	-display: none;
+}
+
+#labelradio { --
+	border: 1px #000099 solid; --
+	border-radius: 7px;
+	padding-left: 3px;
+	padding-right: 3px;
+	height: 35px;
+	padding-top: 5px;
+}
+
+#labelradio:hover { --
+	background-color: #ffffff;
+}
+
+#labelradio:active { --
+	background-color: #ffffff;
+}
+
+.botao-Etapa {
+	margin-top: -10px;
+	margin-left: 5px;
+}
+
+.tabela-planCob-Vend {
+	font-size: 10px;
+	margin-left: 15px;
+	margin-right: 15px;
+}
+
+td {
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+th {
+	text-align: center;
+}
+
+.tabela-planCob-equipe {
+	padding-left: 5px;
+	padding-right: 5px;
+	width: 800px;
+}
+
+.Painel {
+	position: absolute;
+	padding-top: 20px;
+	background-size: cover;
+	background-attachment: fixed;
+	background-color: #ffffff;
+	width: auto;
+	padding-bottom: 20px;
+	top: 85px;
+	left: 160px;
+	z-index: -1;
+}
+
+
+
+a.linkTabela {
+	text-decoration: none;
+}
+
+a.linkTabela:hover {
+	text-decoration: none;
+	color: black;
+}
+
+.detCliRow { -
+	-border: 1px solid red;
+	width: 99%;
+	left: 20px;
+	position: relative;
+}
+
+.form-Cli {
+	padding-left: 1px;
+	padding-right: 0px;
+}
+
+.tituloEtapa {
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+.tabelaEtapa {
+	font-size: 12px;
+	margin-left: 10px;
+	margin-right: 10px;
+	width: 800px;
+}
+
+.teste23 {
+	border: 1px solid red;
+	width: 15px;
+	height: 15px;
+	display: inline;
+}
+
+header {
+	width: 160px;
+	top: 80px;
+	position: fixed;
+}
+
+nav {
+	float: left;
+}
+
+header label {
+	display: block;
+	width: 30px height: 30px;
+	padding: 10px;
+}
+
+header label:hover {
+	cursor: pointer;
+}
+
+ul {
+	list-style: none;
+	padding: 0px;
+}
+
+li {
+	margin: 0px;
+}
+
+#btn-menu {
+	display: none;
+}
+
+.menu {
+	margin-top: -20px;
+	background-color: #C9C9ED;
+	width: 150px;
+	padding: 15px 0px;
+	transition: all 0.5s;
+	height: 90%;
+}
+
+#btn-menu:checked ~ .menu {
+	background-color: #C9C9ED;
+	width: 150px;
+	margin-left: -150px;
+	transition: all 0.5s;
+	padding: 15px 5px;
+}
+
+.linkMenu {
+	text-decoration: none;
+	color: black;
+	display: block;
+	padding: 15px 5px;
+}
+
+a.linkMenu:hover {
+	background-color: rgba(0, 0, 0, 0.3);
+	text-decoration: none;
+	color: white;
+}
+
+.menu-botao {
+	
+}
+
+.ultimaColuna {
+	background-color: #EDFBFB;
+}
+
+.ul-consultas, .ul-relatorios, .ul-config {
+	display: none;
+	padding-left: 15px;
+	background-color: rgba(176, 196, 222);
+}
+
+main {
+	margin-left: 45px;
+	float: left;
+	max-width: 80%;
+}
+
+.user-btn-novo, .user-input-buscar{
+	margin-left:20px;
+	
+}
+
+.user-btn-titulo{
+	margin-left:120px;
+}
+
+.user-tabela{
+	margin-top:15px;
+	
+}
+
+.campo-new-user{
+	margin-left: -20px;
+	
+}
+
+.linha-user{
+	margin-bottom:10px;
+	
+}
+
+.novaSenha-campos{
+	margin:10px
+	
+}
+
+.linha-detcli{
+	margin-left:20px;
+	margin-right:20px;
+	margin-bottom:10px;
+	
+}
+
+.pedDiadio-totGeral{
+	font-size:14pt;
+	
+}
+
+.pedidosDiarioTabela{
+	font-size:9pt;
+	
+}
+.pedDiadio-totGeral{
+	margin-bottom:15px;
+}
+
+.teste{
+	border: 1px solid red;
+	
+}
