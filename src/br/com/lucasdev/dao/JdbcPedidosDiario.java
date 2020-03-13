@@ -46,7 +46,7 @@ public class JdbcPedidosDiario {
 				"	p.dt_cad BETWEEN '"+hoje+" 00:00:00' AND '"+hoje+" 23:59:59' AND \r\n" + 
 				"	p.cd_emp=13  and\r\n" + 
 				"	ev.cd_fila IN ('ABCP','CAPV','BLGV','BLOQ','CRED','ENTR','EXPE','FATU','GERV','FATU') and\r\n" + 
-				"	ev.situacao IN ('AB','FA', 'CA') and\r\n" + 
+				"	ev.situacao IN ('AB','FA') and\r\n" + 
 				"	p.tp_ped not in ('PE','NP')\r\n" + 
 				"	";
 		

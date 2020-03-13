@@ -30,13 +30,14 @@
 		<ul class="ul-relatorios">
 			<li class="li-planoCobertura"><a class="linkMenu"
 				href="planCob">Plano de Cobertura</a></li>
-				<li class="li-planoCobertura"><a class="linkMenu"
-				href="pedDiario">Pedidos Diádio</a></li>
+<!-- 				<li class="li-planoCobertura"><a class="linkMenu" -->
+<!-- 				href="pedDiario">Pedidos Diádio</a></li> -->
+				
 		</ul>
 
 		<li class="li-principal"><a class="linkMenu" href="dev">Download</a></li>
 
-		<li class="li-principal"><a class="linkMenu" href="dev">Comercial</a></li>
+		<li class="li-principal"><a class="linkMenu" href="gerencial">Gerencial</a></li>
 
 		<li class="li-principal"><a class="linkMenu bt3"
 			href="javascript://">Configurações

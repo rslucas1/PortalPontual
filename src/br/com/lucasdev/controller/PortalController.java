@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import br.com.lucasdev.dao.ConnectionFactory;
 import br.com.lucasdev.dao.JdbcConsultaCliente;
 import br.com.lucasdev.dao.JdbcEtapaPedido;
+import br.com.lucasdev.dao.JdbcGerencial;
 import br.com.lucasdev.dao.JdbcHierarquia;
 import br.com.lucasdev.dao.JdbcPedidosDiario;
 import br.com.lucasdev.dao.JdbcPlanoDeCobertura;
@@ -28,6 +29,7 @@ import br.com.lucasdev.modelo.positivacao.PedidoPositivado;
 import br.com.lucasdev.modelo.positivacao.Positivacao;
 import br.com.lucasdev.modelo.relatorios.ColunasMesesBody;
 import br.com.lucasdev.modelo.relatorios.ColunasMesesHead;
+import br.com.lucasdev.modelo.relatorios.DescontoFinanceiro;
 import br.com.lucasdev.modelo.relatorios.Equipe;
 import br.com.lucasdev.modelo.relatorios.PedidosDiario;
 import br.com.lucasdev.modelo.relatorios.Vendedor;
@@ -481,6 +483,53 @@ public class PortalController {
 		}
 
 		return "consCliente";
+	}
+	
+			
+	@RequestMapping("/descFin")
+	public String descFin(Usuario usuario, HttpSession session, Model model) {
+		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
+		if(sessaoUsuario==null || sessaoUsuario.getPerfil().equals("DIRETORIA")) {
+			model.addAttribute("logado", sessaoUsuario);
+			
+			return "descFin";
+		}
+		return "homePage";
+	}
+	
+	@RequestMapping("/descFinProcessado")
+	public String descFinProcessado(Usuario usuario, HttpSession session, Model model, HttpServletRequest request) {
+		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
+		if(sessaoUsuario != null || sessaoUsuario.getPerfil().equals("DIRETORIA")) {
+			int mes = Integer.parseInt(request.getParameter("mesSelecionado"));
+			String ano = request.getParameter("anoSelecionado");
+			
+			List<DescontoFinanceiro> getDescontoFinanceiroDet = new ArrayList<>();
+			getDescontoFinanceiroDet = new JdbcGerencial().getDescontoFinanceiroDet(mes, ano);
+			double totalDesconto = new JdbcGerencial().getDescontoFinanceiroTotal(mes, ano);
+			
+				
+			model.addAttribute("logado", sessaoUsuario);
+			model.addAttribute("descDetalhado", getDescontoFinanceiroDet);
+			model.addAttribute("descTotal", Formata.moeda(totalDesconto));
+			
+		}
+
+		return "descFin";
+	}
+	
+	@RequestMapping("/gerencial")
+	public String gerencial(Usuario usuario, HttpSession session, Model model) {
+		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
+		if(sessaoUsuario != null || sessaoUsuario.getPerfil().equals("DIRETORIA")) {
+			model.addAttribute("logado", sessaoUsuario);
+				
+			return "gerencial";
+		}
+			
+		
+
+		return "homePage";
 	}
 
 }
