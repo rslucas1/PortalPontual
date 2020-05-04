@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
@@ -18,9 +19,12 @@ import br.com.lucasdev.dao.JdbcConsultaCliente;
 import br.com.lucasdev.dao.JdbcEtapaPedido;
 import br.com.lucasdev.dao.JdbcGerencial;
 import br.com.lucasdev.dao.JdbcHierarquia;
+import br.com.lucasdev.dao.JdbcParConfigIndFoco;
 import br.com.lucasdev.dao.JdbcPedidosDiario;
+import br.com.lucasdev.dao.JdbcPlanilhaDeSetores;
 import br.com.lucasdev.dao.JdbcPlanoDeCobertura;
 import br.com.lucasdev.dao.JdbcPositivacaoDao;
+import br.com.lucasdev.dao.JdbcTradeIn;
 import br.com.lucasdev.dao.JdbcUsuarioDao;
 import br.com.lucasdev.modelo.etapaPedidos.EtapaPedidoRelatorio;
 import br.com.lucasdev.modelo.positivacao.Cliente;
@@ -31,11 +35,17 @@ import br.com.lucasdev.modelo.relatorios.ColunasMesesBody;
 import br.com.lucasdev.modelo.relatorios.ColunasMesesHead;
 import br.com.lucasdev.modelo.relatorios.DescontoFinanceiro;
 import br.com.lucasdev.modelo.relatorios.Equipe;
+import br.com.lucasdev.modelo.relatorios.IndFocoParVendedor;
+import br.com.lucasdev.modelo.relatorios.Industria;
 import br.com.lucasdev.modelo.relatorios.PedidosDiario;
+import br.com.lucasdev.modelo.relatorios.PlanilhaDeSetores;
+import br.com.lucasdev.modelo.relatorios.ProdNaoVendidos;
 import br.com.lucasdev.modelo.relatorios.Vendedor;
 import br.com.lucasdev.modelo.usuario.Usuario;
 import br.com.lucasdev.util.BetUltimoAno;
 import br.com.lucasdev.util.Formata;
+import br.com.ontex.JbdcOntex;
+import br.com.ontex.Relatorio;
 
 @Controller
 public class PortalController {
@@ -43,7 +53,7 @@ public class PortalController {
 	@RequestMapping(value = {"/index", "/", ""})
 	public String index() {
 		
-		LocalDate dtInit = LocalDate.parse("2020-01-28");
+		LocalDate dtInit = LocalDate.parse("2020-04-27");
 		LocalDate hoje = LocalDate.now();
 			
 		if(hoje.isAfter(dtInit.plusDays(90))) {
@@ -71,16 +81,18 @@ public class PortalController {
 	public String efetuaLogin(Usuario usuario, HttpSession session, Model model) {
 
 		if (new JdbcUsuarioDao().exiteUsuario(usuario)) {
+			session.setAttribute("usuarioLogado", usuario);
+			Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
+			model.addAttribute("logado", sessaoUsuario);
 			
-			if (new JdbcUsuarioDao().ativoErp(usuario.getCd_target())==1) {
-				session.setAttribute("usuarioLogado", usuario);
-				Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
+			System.out.println("Logado com cd_Tgt: " + sessaoUsuario.getCd_target());
+			System.out.println("Logado com nome: " + sessaoUsuario.getNome());
+			System.out.println("Primeiro acesso: " + sessaoUsuario.getPrim_acesso());
+			System.out.println("Ativo MySql: " + sessaoUsuario.getAtivo());
+			System.out.println("===================================================");
+			
+			if (new JdbcUsuarioDao().ativoErp(usuario.getCd_target())==1 && sessaoUsuario.getAtivo()==1) {
 
-				model.addAttribute("logado", sessaoUsuario);
-				System.out.println("Logado com cd_Tgt: " + sessaoUsuario.getCd_target());
-				System.out.println("Logado com nome: " + sessaoUsuario.getNome());
-				System.out.println("Primeiro acesso: " + sessaoUsuario.getPrim_acesso());
-				
 					if(sessaoUsuario.getPrim_acesso()==1) {
 						new JdbcUsuarioDao().LogAcesso(sessaoUsuario);
 						return "homePage";
@@ -88,8 +100,13 @@ public class PortalController {
 						return "novaSenha";
 						
 					}
+					
 
 			}else {
+				System.err.println("Erro !, usuário inativo no ERP ou no Portal");
+				System.err.println("Logado com cd_Tgt: " + sessaoUsuario.getCd_target());
+				System.err.println("Ativo Portal: " + sessaoUsuario.getAtivo());
+				
 				return "index";
 			}
 
@@ -266,6 +283,39 @@ public class PortalController {
 		model.addAttribute("logado", sessaoUsuario);
 		return "home";
 	}
+	
+	@RequestMapping("/planCobConsolidado")
+	public String planCobConsolidado(Usuario usuario, HttpSession session, Model model, HttpServletResponse response, HttpServletRequest request) {
+		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
+//		if (sessaoUsuario != null) {
+				String industria = request.getParameter("industria");
+				System.out.println(industria);
+				
+				model.addAttribute("logado", sessaoUsuario);				
+				
+				ColunasMesesHead colunaMes = new ColunasMesesHead();
+				model.addAttribute("colunaMes", colunaMes);
+				
+				List<ColunasMesesBody> planoDeCoberturaVenCli = new ArrayList<>();
+						
+				String periodo = new BetUltimoAno().getBetweenUltimoAno();
+				
+				if(industria==null) {
+					
+				}else if(industria!=null) {
+					planoDeCoberturaVenCli = new JdbcPlanoDeCobertura().getPlanoDeCobConsolidado(periodo, sessaoUsuario.getPerfil(), sessaoUsuario.getCd_target(), industria);
+					model.addAttribute("planoDeCoberturaVenCli", planoDeCoberturaVenCli);	
+				}
+				
+				/* REPORT PARA EXCEL */
+								
+				/* REPORT PARA EXCEL */
+				
+					
+		return "planCobConsolidado";
+	}
+		
+	
 
 	@RequestMapping("/planCobGerencia")
 	public String planCobGerencia(Usuario usuario, HttpSession session, Model model, Equipe equipe) {
@@ -325,11 +375,8 @@ public class PortalController {
 
 		if (sessaoUsuario != null) {
 			List<ColunasMesesBody> planoDeCoberturaVenCli = new ArrayList<>();
-
 			String periodo = new BetUltimoAno().getBetweenUltimoAno();
-
 			System.out.println("Periodo Apurado: " + periodo);
-
 			planoDeCoberturaVenCli = new JdbcPlanoDeCobertura().getPlanoDeCoberturaVenCli(periodo,
 					vendedor.getCd_venda());
 
@@ -351,7 +398,7 @@ public class PortalController {
 	public String teste(Usuario usuario, HttpSession session, Model model) {
 		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
 
-		return "homePage";
+		return "itensNaoVendidos";
 	}
 
 	@RequestMapping("/user")
@@ -382,7 +429,7 @@ public class PortalController {
 	
 	@RequestMapping("/cadastraUsuario")
 	public String cadastraUsuario(Usuario usuario, HttpSession session, HttpServletRequest request, Model model){
-		System.out.println("captyrado do formaulario:");
+		System.out.println("capturado do formaulario:");
 		new JdbcUsuarioDao().novoUsuario(usuario);
 		
 		return "redirect:user";
@@ -423,23 +470,22 @@ public class PortalController {
 	public String pedidosDiario(Model model, HttpSession session) {
 		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
 		List<Vendedor> listaVendedores = new ArrayList<>();
+		
 		if (sessaoUsuario != null) {
 			List <PedidosDiario> pedidosdiario = new ArrayList<>();
 			
 			if(sessaoUsuario.getPerfil().equals("DIRETORIA") ||sessaoUsuario.getPerfil().equals("COMERCIAL")
 					||sessaoUsuario.getPerfil().equals("ADMINISTRADOR")) {
-					pedidosdiario = new JdbcPedidosDiario().pedidosdiarioGeral();
+					pedidosdiario = new JdbcPedidosDiario().pedidosDiarioGeral();
 							
 			}else if(sessaoUsuario.getPerfil().equals("GERENTE")) {
 				listaVendedores = new JdbcHierarquia().getEquipeVendedoresGerente(sessaoUsuario.getCd_target());
-				pedidosdiario = new JdbcPedidosDiario().pedidosdiario(listaVendedores);
+				pedidosdiario = new JdbcPedidosDiario().pedidosDiarioEquipe(listaVendedores);
 
 			}else if(sessaoUsuario.getPerfil().equals("SUPERVISOR")) {
 				listaVendedores = new JdbcHierarquia().getEquipeVendedoresSupervisor(sessaoUsuario.getCd_target());
-				pedidosdiario = new JdbcPedidosDiario().pedidosdiario(listaVendedores);
+				pedidosdiario = new JdbcPedidosDiario().pedidosDiarioEquipe(listaVendedores);
 			}else if(sessaoUsuario.getPerfil().equals("VENDEDOR")) {
-				String erro = "Você não tem acesso a essa tela, para consultar seus pedido vá em CONSULTA > ETAPA DE PEDIDOS ";
-				model.addAttribute("mensagem", erro);
 				model.addAttribute("logado", sessaoUsuario);	
 				return "homePage";
 			}
@@ -521,7 +567,7 @@ public class PortalController {
 	@RequestMapping("/gerencial")
 	public String gerencial(Usuario usuario, HttpSession session, Model model) {
 		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
-		if(sessaoUsuario != null || sessaoUsuario.getPerfil().equals("DIRETORIA")) {
+		if(sessaoUsuario != null && sessaoUsuario.getPerfil().equals("DIRETORIA")) {
 			model.addAttribute("logado", sessaoUsuario);
 				
 			return "gerencial";
@@ -531,5 +577,299 @@ public class PortalController {
 
 		return "homePage";
 	}
+	
+	
+	
+	@RequestMapping("/Ontex")
+	public String Ontex(Usuario usuario, HttpSession session, Model model,HttpServletRequest request) {
+		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
+		if(sessaoUsuario != null && sessaoUsuario.getPerfil().equals("DIRETORIA")) {
+			model.addAttribute("logado", sessaoUsuario);
+			String quantidade = request.getParameter("quantidade");
+			//int qtdConvert = Integer.parseInt(quantidade);
+			System.out.println(quantidade);
+				if(quantidade != null) {
+				List<Relatorio> relatorio = new ArrayList<>();
+				
+				relatorio = new JbdcOntex().getRelatorio();
+				
+//				for(Relatorio r : relatorio) {
+//					
+//					System.out.println(
+//							r.getCod()+"|"+
+//							r.getRazao()+"|"+
+//							r.getCnpj()+"|"+
+//							r.getLimite()+"|"+
+//							r.getRecebimento()+"|"+
+//							r.getVlaberto()+"|"+
+//							r.getVlvencido()
+//							
+//							);
+//					
+//				}
+//				
+				model.addAttribute("relatorio", relatorio);
+				
+				}
+			
+			return "itensNaoVendidos";
+		}
+			
+		
 
+		return "homePage";
+	}
+
+	@RequestMapping("/analiseProdutos")
+	public String analiseProdutos(Usuario usuario, HttpSession session, Model model,HttpServletRequest request) {
+		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
+		if(sessaoUsuario != null && sessaoUsuario.getPerfil().equals("DIRETORIA")) {
+			
+			model.addAttribute("logado", sessaoUsuario);
+			String quantidade = request.getParameter("quantidade");
+			
+						
+			if(quantidade != null) {
+				List<ProdNaoVendidos> itensNaoVendidos = new ArrayList<>();
+				
+				itensNaoVendidos = new JdbcGerencial().itensNaoVendidos(quantidade);
+				
+				model.addAttribute("itensNaoVendidos", itensNaoVendidos);
+				
+				
+//				for (ProdNaoVendidos p : itensNaoVendidos ) {
+//					
+//					System.out.println(p.getCdProd()+" - "+p.getQtdDiasSemVenda() );
+//					
+//					
+//				}
+				
+				
+				}
+			
+			return "itensNaoVendidos";
+		}
+			
+		
+
+		return "homePage";
+	}
+	
+	
+	@RequestMapping("/indFocoParConfig")
+	public String indFoco(Usuario usuario, HttpSession session, Model model, HttpServletRequest request, IndFocoParVendedor urlEditaVend) {
+		
+		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
+		String industria = request.getParameter("industria");
+		String operacao = request.getParameter("operacao");
+		String box=request.getParameter("box"); 
+		
+		System.out.println("entrando no metodo INDUSTRIA:"+industria);
+		System.out.println("entrando no metodo OPERACAO:"+operacao);
+		System.out.println("VENDEDOR SELECIONAD:"+ urlEditaVend.getCd_venda());
+		
+		
+		
+		if(sessaoUsuario != null && sessaoUsuario.getPerfil().equals("ADMINISTRADOR")) {
+			model.addAttribute("logado", sessaoUsuario);
+			if(industria==null && operacao==null) {
+				System.out.println("primeiro IF");
+				System.out.println("1");
+				return "indFocoParConfig";
+				
+			} else if (industria!=null && operacao==null){
+				if(industria.equals("ONTEX")) {
+					System.out.println("2");				
+					List<IndFocoParVendedor> vendedoresAtivos = new ArrayList<>();
+					vendedoresAtivos = new JdbcParConfigIndFoco().getVendedorAtivo();
+					model.addAttribute("vendedoresAtivos", vendedoresAtivos);
+					model.addAttribute("industria", industria);
+					industria =null;
+					
+//					for (IndFocoParVendedor i : vendedoresAtivos) {
+//						System.out.println(i.getCd_venda()+" - "+i.isFoco());
+//						
+//					}
+					
+					return "indFocoParConfig";
+									
+				}
+			} else if(industria==null && operacao!=null) {
+				if(operacao.equals("editar")) {
+					System.out.println("3");
+					System.out.println("atualiazação no vendedor:"+urlEditaVend.getCd_venda()+" Set="+box);
+					List<IndFocoParVendedor> vendedoresAtivos = new ArrayList<>();
+					vendedoresAtivos = new JdbcParConfigIndFoco().editaVendFocoOntex(urlEditaVend.getCd_venda(), box);
+					model.addAttribute("industria", industria);
+					model.addAttribute("vendedoresAtivos", vendedoresAtivos);
+				}
+				
+				return "indFocoParConfig";
+				
+			}
+			
+	
+			else {
+					System.out.println("...Caiu no Else");
+				return "indFocoParConfig";
+				
+			}
+		}	
+			
+
+		return "homePage";
+	}
+	
+	
+	@RequestMapping("/parConfig")
+	public String parConfig(Usuario usuario, HttpSession session, Model model) {
+		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
+		if(sessaoUsuario != null && sessaoUsuario.getPerfil().equals("ADMINISTRADOR")) {
+			model.addAttribute("logado", sessaoUsuario);
+			
+
+			
+				
+			return "parConfig";
+		}
+			
+		return "homePage";
+	}
+	
+	@RequestMapping("/desempenhoDiario")
+	public String desempenhoDiario(Usuario usuario, HttpSession session, Model model) {
+		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
+		if(sessaoUsuario != null) {
+			if(sessaoUsuario.getPerfil().equals("ADMINISTRADOR")||sessaoUsuario.getPerfil().equals("COMERCIAL")||sessaoUsuario.getPerfil().equals("DIRETORIA")) {
+				model.addAttribute("logado", sessaoUsuario);
+				
+				return "desempenhoDiario";
+			
+			
+			}
+			
+
+			
+				
+			
+		}
+		
+		return "index";
+	}
+	
+	@RequestMapping("/planilhaDeSetores")
+	public String planilhaDeSetores(Usuario usuario, HttpSession session, Model model, HttpServletRequest request) {
+		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
+		if(sessaoUsuario != null) {
+			if(sessaoUsuario.getPerfil().equals("ADMINISTRADOR")||sessaoUsuario.getPerfil().equals("COMERCIAL")||sessaoUsuario.getPerfil().equals("DIRETORIA")) {
+				model.addAttribute("logado", sessaoUsuario);
+				System.out.println(request.getParameter("filtro"));
+				
+				if(request.getParameter("filtro")==null) {
+					return "planilhaDeSetores";
+					
+				} else {
+						System.out.println("Executou o Else: "+request.getParameter("filtro"));
+						List<PlanilhaDeSetores> planilhaDeSetores = new ArrayList<>();
+				
+						planilhaDeSetores = new JdbcPlanilhaDeSetores().getPlanilhaDeSetores(request.getParameter("filtro"));
+						
+						for (PlanilhaDeSetores p : planilhaDeSetores) {
+							System.out.println(p.getCd_venda());
+							
+							
+						}
+						
+						model.addAttribute("planilhaDeSetores", planilhaDeSetores);
+				
+					return "planilhaDeSetores";
+				}
+				
+				
+			
+			}
+			
+			return "homePage";
+			
+				
+			
+		}
+		
+		return "index";
+	}
+	
+	
+	@RequestMapping("/tradeIn")
+	public String tradeIn(Usuario usuario, HttpSession session, Model model, HttpServletRequest request) {
+		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
+		if(sessaoUsuario != null) {
+			model.addAttribute("logado", sessaoUsuario);
+			
+			//VARIAVEIS
+			String cod_industria=null;
+			String cod_equipe=null;
+			String dataInicial = request.getParameter("dataInicial");
+			String dataFinal = request.getParameter("dataFinal");
+			String categorias=null;
+			String marcas=null;
+			String familia=null;
+			String[] segmentos = null;
+			
+			//CAPTURA SUBMIT
+			cod_industria = request.getParameter("industria");
+			cod_equipe = request.getParameter("equipe");
+			
+			
+			//TESTE
+			System.out.println("Data Inicial: "+dataInicial);
+			System.out.println("Data Final: "+dataFinal);
+			System.out.println("Industria: "+cod_industria);
+			System.out.println("Equipe: "+cod_equipe);
+			System.out.println("Categorias: "+categorias);
+			
+			System.err.println();
+			
+			
+			//INICIO DO CONTROLE DE DECISÃO
+			
+			if(cod_industria==null) {
+				List<Industria> industria = new ArrayList<>();
+				industria = new JdbcTradeIn().getIndustria(null);
+				model.addAttribute("industria", industria);
+				return "tradeIn/industria";
+			}else if(categorias==null) {
+				//Industria industria = new Industria();
+				List<Industria> industria = new ArrayList<>();
+				industria = new JdbcTradeIn().getIndustria(cod_industria);
+				model.addAttribute("industria", industria);
+				Equipe equipe = new Equipe();
+				equipe = new JdbcHierarquia().equipeGerenciaAtiva(cod_equipe);
+				model.addAttribute("equipe", equipe);
+				model.addAttribute("logado", sessaoUsuario);
+				model.addAttribute("dataInicial", dataInicial);
+				model.addAttribute("dataFinal", dataFinal);
+								
+				segmentos = request.getParameterValues("segmento");
+				
+				if(segmentos==null) {
+					System.out.println("0");
+				} else {
+				System.out.println(segmentos.length);
+				
+				}
+				for(String seg : segmentos) {
+					System.out.println(seg);
+					
+				}
+				
+				return "tradeIn/categoria";
+			}
+				
+		}//fim verifica sessao
+				
+		
+		return "index";
+	
+	}
 }
+

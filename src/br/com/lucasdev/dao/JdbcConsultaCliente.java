@@ -25,6 +25,12 @@ public class JdbcConsultaCliente {
 	
 	public ClienteDetalhado getClienteDetalhado(String cnpj) {
 		ClienteDetalhado clienteDetalhado = new ClienteDetalhado();
+		
+			cnpj = cnpj.replace(".", "");
+        	cnpj = cnpj.replace("/", "");
+        	cnpj = cnpj.replace("-", "");
+        	cnpj = cnpj.replace(" ", "");
+        	
 		String sql ="select\r\n" + 
 				" c.cd_clien cd_clien,\r\n" + 
 				" nome descricao, \r\n" + 
@@ -41,7 +47,7 @@ public class JdbcConsultaCliente {
 				" e.municipio, \r\n" + 
 				" e.distrito,\r\n" + 
 				" c.ativo,\r\n" + 
-				" c.cd_vend,\r\n" + 
+				" vc.cd_vend,\r\n" + 
 				"CONVERT(varchar(10), c.dt_ult_compra, 103) as dt_ult_compra\r\n" + 
 				" \r\n" + 
 				"from cliente c \r\n" + 
@@ -54,7 +60,8 @@ public class JdbcConsultaCliente {
 				"\r\n" + 
 				"join ram_ativ r\r\n" + 
 				"on r.ram_ativ = c.ram_ativ\r\n" + 
-				"\r\n" + 
+				"join vend_cli vc\r\n" + 
+				"on c.cd_clien=vc.cd_clien\r\n" + 
 				"join area a\r\n" + 
 				"on c.cd_area = a.cd_area\r\n" + 
 				"\r\n" + 

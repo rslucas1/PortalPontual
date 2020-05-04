@@ -46,6 +46,7 @@ public class JdbcUsuarioDao {
 				if (encontrado) {				
 					usuario.setNome(rs.getString("nome"));
 					int codigoConvertido = Integer.parseInt(rs.getString("codigo"));
+					usuario.setAtivo(rs.getInt("ativo"));
 					usuario.setCodigo(codigoConvertido);
 					usuario.setCd_target(rs.getString("cd_target"));
 					usuario.setPerfil(rs.getString("perfil"));
@@ -146,7 +147,7 @@ public class JdbcUsuarioDao {
 					+ "perfil, "
 					+ "prim_acesso, "
 					+ "senha)\r\n" + 
-					"	VALUES (1, ?,?,?,'"+hoje+"',?,0,'000000')";
+					"	VALUES (1, ?,?,?,'"+hoje+"',?,0,'123456')";
 		
 			try {
 							

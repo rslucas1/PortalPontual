@@ -5,6 +5,16 @@ public class Equipe {
 	private String descEquipe;
 	private String descGerencia;
 	
+	
+	
+	public Equipe() {
+		
+	}
+	public Equipe(String cdEquipe, String descEquipe) {
+		super();
+		this.cdEquipe = cdEquipe;
+		this.descEquipe = descEquipe;
+	}
 	public String getCdEquipe() {
 		return cdEquipe;
 	}

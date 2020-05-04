@@ -26,18 +26,15 @@ public class JdbcPedidosDiario {
 
 	}
 	
-	public List <PedidosDiario> pedidosdiarioGeral(){
+	public List <PedidosDiario> pedidosDiarioGeral(){
 		List <PedidosDiario> pedidosdiario = new ArrayList<>();
 	
-		String sql = "select p.nu_ped, p.cd_vend, v.nome, c.cd_clien, c.nome AS 'desc', p.valor_tot , ev.cd_fila,  p.situacao\r\n" + 
+		String sql = "select p.nu_ped, p.cd_vend, v.nome, c.cd_clien, c.nome AS 'desc', p.valor_tot ,  p.situacao\r\n" + 
 				"\r\n" + 
 				"from ped_vda p\r\n" + 
 				"\r\n" + 
 				"join vendedor v\r\n" + 
 				"on p.cd_vend=v.cd_vend\r\n" + 
-				"\r\n" + 
-				"join evento ev\r\n" + 
-				"on ev.nu_ped = p.nu_ped\r\n" + 
 				"\r\n" + 
 				"join cliente c\r\n" + 
 				"on c.cd_clien = p.cd_clien\r\n" + 
@@ -45,10 +42,8 @@ public class JdbcPedidosDiario {
 				"where \r\n" + 
 				"	p.dt_cad BETWEEN '"+hoje+" 00:00:00' AND '"+hoje+" 23:59:59' AND \r\n" + 
 				"	p.cd_emp=13  and\r\n" + 
-				"	ev.cd_fila IN ('ABCP','CAPV','BLGV','BLOQ','CRED','ENTR','EXPE','FATU','GERV','FATU') and\r\n" + 
-				"	ev.situacao IN ('AB','FA') and\r\n" + 
-				"	p.tp_ped not in ('PE','NP')\r\n" + 
-				"	";
+				"	p.tp_ped not in ('PE','NP', 'MD') AND \r\n" + 
+				"   p.situacao NOT IN ('CA')";
 		
 				System.out.println(sql);
 		
@@ -65,8 +60,7 @@ public class JdbcPedidosDiario {
 				registro.setCd_cliente(rs.getInt(4));
 				registro.setDesc_cliente(rs.getString(5));
 				registro.setValor(rs.getDouble(6));
-				registro.setStatus(descFila(rs.getString(7)));
-				registro.setSituacao(rs.getString(8));
+				registro.setSituacao(rs.getString(7));
 			
 				pedidosdiario.add(registro);
 				
@@ -80,7 +74,7 @@ public class JdbcPedidosDiario {
 	}
 	
 	
-	public List <PedidosDiario> pedidosdiario(List lista){
+	public List <PedidosDiario> pedidosDiarioEquipe(List lista){
 		
 		List<Vendedor> listaVendedores = new ArrayList<>();
 		listaVendedores=lista;
@@ -103,15 +97,12 @@ public class JdbcPedidosDiario {
 		
 		List <PedidosDiario> pedidosdiario = new ArrayList<>();
 				
-		String sql = "select p.nu_ped, p.cd_vend, v.nome, c.cd_clien, c.nome AS 'desc', p.valor_tot , ev.cd_fila,  p.situacao\r\n" + 
+		String sql = "select p.nu_ped, p.cd_vend, v.nome, c.cd_clien, c.nome AS 'desc', p.valor_tot , p.situacao\r\n" + 
 				"\r\n" + 
 				"from ped_vda p\r\n" + 
 				"\r\n" + 
 				"join vendedor v\r\n" + 
 				"on p.cd_vend=v.cd_vend\r\n" + 
-				"\r\n" + 
-				"join evento ev\r\n" + 
-				"on ev.nu_ped = p.nu_ped\r\n" + 
 				"\r\n" + 
 				"join cliente c\r\n" + 
 				"on c.cd_clien = p.cd_clien\r\n" + 
@@ -120,10 +111,8 @@ public class JdbcPedidosDiario {
 				"	p.cd_vend IN ("+inVendedores+") and \r\n" + 
 				"	p.dt_cad BETWEEN '"+hoje+" 00:00:00' AND '"+hoje+" 23:59:59' AND \r\n" + 
 				"	p.cd_emp=13  and\r\n" + 
-				"	ev.cd_fila IN ('ABCP','CAPV','BLGV','BLOQ','CRED','ENTR','EXPE','FATU','GERV','FATU') and\r\n" + 
-				"	ev.situacao = 'AB' and\r\n" + 
-				"	p.tp_ped not in ('PE','NP')\r\n" + 
-				"	";
+				"	p.tp_ped not in ('PE','NP') AND \r\n" + 
+				"   p.situacao NOT IN ('CA')";
 		
 				System.out.println(sql);
 		
@@ -140,8 +129,7 @@ public class JdbcPedidosDiario {
 				registro.setCd_cliente(rs.getInt(4));
 				registro.setDesc_cliente(rs.getString(5));
 				registro.setValor(rs.getDouble(6));
-				registro.setStatus(descFila(rs.getString(7)));
-				registro.setSituacao(rs.getString(8));
+				registro.setSituacao(rs.getString(7));
 			
 				pedidosdiario.add(registro);
 				

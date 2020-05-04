@@ -41,7 +41,7 @@
 					</c:forEach>
 				</table>
 			</div>
-
+			<a href="planCobConsolidado" class="btn btn-warning btn-sm" id="btn_planCobGeralConsolidado" onClick="processamento()">CONSOLIDADO</a>
 		</div>
 	
 	 </main>

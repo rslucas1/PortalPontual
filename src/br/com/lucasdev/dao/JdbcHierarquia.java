@@ -7,9 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.core.PrioritizedParameterNameDiscoverer;
-
-import br.com.lucasdev.modelo.relatorios.PedidosDiario;
+import br.com.lucasdev.modelo.relatorios.Equipe;
 import br.com.lucasdev.modelo.relatorios.Vendedor;
 
 public class JdbcHierarquia {
@@ -146,6 +144,71 @@ public class JdbcHierarquia {
 			
 					
 		return cdGerencia;
+	}
+	
+	
+	public String getCdEquipe(String cd_vendSup){
+		String cdEquipe="";
+		
+		
+		String sql="select e.cd_equipe from equipe e\r\n" + 
+				"where e.cd_emp=13 and\r\n" + 
+				"e.ativo=1 and\r\n" + 
+				"e.cd_vend_sup='"+cd_vendSup+"'";
+				
+		try {
+			PreparedStatement stmt = this.connectionSqlServer.prepareStatement(sql);
+			ResultSet rs = stmt.executeQuery();
+										
+			while(rs.next()) {
+			
+				cdEquipe=rs.getString(1);
+			}
+							
+		}catch(SQLException e) {
+				throw new RuntimeException(e);
+		}
+			
+					
+		return cdEquipe;
+	}
+	
+	
+	public Equipe equipeGerenciaAtiva(String cod_Equipe_Gerencia) {
+		Equipe equipe = new Equipe("GERAL","GERAL");
+			String sql="select *\r\n" + 
+					" \r\n" + 
+					"from (\r\n" + 
+					"\r\n" + 
+					"select  cd_gerencia as cod , descricao from gerencia where ativo =1 and cd_emp =13 and cd_gerencia not in ('N/13','PC01','PC03','PC04','PC05','PC07','PC08','RM01','','')\r\n" + 
+					"UNION all\r\n" + 
+					"select cd_equipe  as cod , descricao from equipe where ativo =1 and cd_emp=13 and cd_equipe not in ('PC98','PC85','1','1001','RM02','','','','','','') )gerencia\r\n" + 
+					"\r\n" + 
+					"where cod in ('"+cod_Equipe_Gerencia+"') ";
+		
+		try {
+			
+			PreparedStatement stmt = this.connectionSqlServer.prepareStatement(sql);
+			ResultSet rs = stmt.executeQuery();
+			
+			
+			
+			while(rs.next()) {
+				equipe.setCdEquipe(rs.getString(1));
+				equipe.setDescEquipe(rs.getString(2));
+				
+			}
+			
+			
+			
+		}catch(SQLException e) {
+			throw new RuntimeException(e);
+		}
+		
+		
+		
+		return equipe;
+		
 	}
 	
 

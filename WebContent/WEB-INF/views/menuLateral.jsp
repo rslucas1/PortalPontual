@@ -30,8 +30,10 @@
 		<ul class="ul-relatorios">
 			<li class="li-planoCobertura"><a class="linkMenu"
 				href="planCob">Plano de Cobertura</a></li>
-<!-- 				<li class="li-planoCobertura"><a class="linkMenu" -->
-<!-- 				href="pedDiario">Pedidos Diádio</a></li> -->
+			<li class="li-planoCobertura"><a class="linkMenu"
+				href="pedDiario">Pedidos Diádio</a></li>
+			<li class="li-planoCobertura"><a class="linkMenu"
+				href="planilhaDeSetores">Planilha de Setores</a></li>	
 				
 		</ul>
 
@@ -47,7 +49,7 @@
 			<li class="li-config"><a class="linkMenu"
 				href="user">Usuários</a></li>
 			<li class="li-config"><a class="linkMenu"
-				href="log">Log</a></li>
+				href="parConfig">Parâmetros</a></li>
 		</ul>
 
 		<li class="li-principal"><a class="linkMenu" href="logout">Sair</a></li>

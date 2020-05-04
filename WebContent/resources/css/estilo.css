@@ -355,3 +355,44 @@ main {
 	border: 1px solid red;
 	
 }
+
+#buscarItensNvendidos{
+	margin-left:5px;
+	
+}
+
+#tabelaItensNvendidos{
+	margin-top:15px;
+	font-size: 11px;
+}
+
+#cxSelIndFoco{
+	width:200px;
+	top:400px;
+	
+}
+
+#btn_planCobGeralConsolidado{
+	
+	margin-left:15px;
+}
+
+.checkTradeIn{
+	margin-right:22px;
+	
+}
+
+.tableTradeIn{
+	font-size:10px;
+	marin-bottom:40px;
+	--border: 1px solid red;
+	
+}
+
+
+
+.dropdownTradeIndset{
+	--border: 1px solid red;
+	
+	
+}

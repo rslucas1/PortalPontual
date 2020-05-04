@@ -4,6 +4,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 	
+	
+	<script>
+	function processamento() {
+	
+			alert("O Relatório Consolidado pode levar até 2 minutos para ser processado, Aguarde !")
+		
+	}
+	
+	</script>
+
 	<c:import url="head.jsp" />
 <body>
 	<c:import url="cabecalho.jsp" />
@@ -40,6 +50,9 @@
 					</c:forEach>
 				</table>
 			</div>
+			
+			<a href="planCobConsolidado" class="btn btn-warning btn-sm" id="btn_planCobGeralConsolidado" onClick="processamento()">CONSOLIDADO</a>
+<!-- 			<a href="ReportplanCobConsolidado" class="btn btn-warning btn-sm" id="btn_planCobGeralConsolidado" onClick="processamento()">DOWNLOAD</a> -->
 
 		</div>
 	

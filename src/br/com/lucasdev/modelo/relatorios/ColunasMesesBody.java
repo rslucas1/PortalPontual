@@ -1,8 +1,9 @@
 package br.com.lucasdev.modelo.relatorios;
 
 import br.com.lucasdev.modelo.positivacao.Cliente;
+import br.com.lucasdev.modelo.positivacao.ClienteDetalhado;
 
-public class ColunasMesesBody extends Cliente {
+public class ColunasMesesBody extends ClienteDetalhado {
 	
 	private String coluna01,
 	coluna02, 

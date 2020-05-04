@@ -1,0 +1,62 @@
+
+
+Path = C:\Eclipse\WorkSpace\portal\src\br
+
+Path = C:\Eclipse\WorkSpace\portal\src\br\com
+
+Path = C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev
+
+Path = C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\controller
+	 C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\controller\PortalController.java = 673 linhas
+
+Path = C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\dao
+	 C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\dao\ConnectionFactory.java = 50 linhas
+	 C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\dao\JdbcConsultaCliente.java = 130 linhas
+	 C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\dao\JdbcEtapaPedido.java = 130 linhas
+	 C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\dao\JdbcGerencial.java = 310 linhas
+	 C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\dao\JdbcHierarquia.java = 152 linhas
+	 C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\dao\JdbcIndFocoParVendedor.java = 70 linhas
+	 C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\dao\JdbcPedidosDiario.java = 187 linhas
+	 C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\dao\JdbcPlanoDeCobertura.java = 444 linhas
+	 C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\dao\JdbcPositivacaoDao.java = 200 linhas
+	 C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\dao\JdbcUsuarioDao.java = 216 linhas
+
+Path = C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\modelo
+
+Path = C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\modelo\etapaPedidos
+	 C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\modelo\etapaPedidos\EtapaPedidoRelatorio.java = 45 linhas
+
+Path = C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\modelo\positivacao
+	 C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\modelo\positivacao\Cliente.java = 24 linhas
+	 C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\modelo\positivacao\ClienteDetalhado.java = 132 linhas
+	 C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\modelo\positivacao\PedidoPositivado.java = 36 linhas
+	 C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\modelo\positivacao\Positivacao.java = 17 linhas
+
+Path = C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\modelo\relatorios
+	 C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\modelo\relatorios\ColunasMesesBody.java = 118 linhas
+	 C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\modelo\relatorios\ColunasMesesHead.java = 138 linhas
+	 C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\modelo\relatorios\DescontoFinanceiro.java = 65 linhas
+	 C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\modelo\relatorios\Equipe.java = 29 linhas
+	 C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\modelo\relatorios\IndFocoParVendedor.java = 23 linhas
+	 C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\modelo\relatorios\PedidosDiario.java = 68 linhas
+	 C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\modelo\relatorios\ProdNaoVendidos.java = 69 linhas
+	 C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\modelo\relatorios\Vendedor.java = 36 linhas
+
+Path = C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\modelo\usuario
+	 C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\modelo\usuario\Usuario.java = 110 linhas
+
+Path = C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\util
+	 C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\util\BetPeriodo.java = 55 linhas
+	 C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\util\BetUltimoAno.java = 23 linhas
+	 C:\Eclipse\WorkSpace\portal\src\br\com\lucasdev\util\Formata.java = 13 linhas
+
+Path = C:\Eclipse\WorkSpace\portal\src\br\com\ontex
+	 C:\Eclipse\WorkSpace\portal\src\br\com\ontex\JbdcOntex.java = 179 linhas
+	 C:\Eclipse\WorkSpace\portal\src\br\com\ontex\Relatorio.java = 64 linhas
+
+
+
+=============================================
+Sub-pastas do projeto = 12 pastas
+Classes do projeto = 30 classes
+Linhas de codigo do projeto = 3806 linhas

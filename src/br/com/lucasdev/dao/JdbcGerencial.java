@@ -4,11 +4,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 import br.com.lucasdev.modelo.relatorios.DescontoFinanceiro;
-import br.com.lucasdev.modelo.relatorios.Vendedor;
+import br.com.lucasdev.modelo.relatorios.ProdNaoVendidos;
 import br.com.lucasdev.util.BetPeriodo;
 
 public class JdbcGerencial {
@@ -158,8 +160,151 @@ public class JdbcGerencial {
 	}
 	
 	
+	public List<ProdNaoVendidos> itensNaoVendidos(String qtdDiasString){
+		List<ProdNaoVendidos> itensNaoVendidos = new ArrayList<>();
+		
+		List<ProdNaoVendidos> itensAtivos = new ArrayList<>();
+		
+		String sqlItensAtivos="select p.cd_prod, p.descricao, f.descricao, \r\n" + 
+				"\r\n" + 
+				"cast((e.qtde-e.qtde_pend_pedv)as integer) from produto p\r\n" + 
+				"\r\n" + 
+				"join fabric f\r\n" + 
+				"on p.cd_fabric = f.cd_fabric\r\n" + 
+				"\r\n" + 
+				"join estoque e\r\n" + 
+				"on p.cd_prod = e.cd_prod\r\n" + 
+				"\r\n" + 
+				"\r\n" + 
+				"where p.ativo=1 and p.bloq_envio_palm_top=0 and p.venda=1\r\n" + 
+				"	and e.cd_emp=13 and e.cd_local='CENTRAL' and e.qtde>0";
+		
+		
+		try {
+			PreparedStatement stmt = this.connectionSqlServer.prepareStatement(sqlItensAtivos);
+			ResultSet rs = stmt.executeQuery();
+										
+			while(rs.next()) {
+				ProdNaoVendidos registro = new ProdNaoVendidos();
+				LocalDate dataItem;
+				
+				registro.setCdProd(rs.getString(1));
+				registro.setDescProd(rs.getString(2));
+				registro.setFabricante(rs.getString(3));
+				registro.setEstoque(rs.getString(4));
+				
+				registro.setnUltimoPed(numProdUltimoPedido(registro.getCdProd()));
+				registro.setDtUltPed(dtProdUltimoPedido(registro.getCdProd()));
+				
+				
+				
+				int qtdConvInt = Integer.parseInt(qtdDiasString);
+				
+				if(registro.getDtUltPed()==null) {
+					registro.setDtUltPed("Sem Venda");
+					//System.err.println(registro.getDtUltPed());
+					
+					registro.setQtdDiasSemVenda("Sem Venda");
+					itensAtivos.add(registro);
+					
+				} else {
+					dataItem = LocalDate.parse(registro.getDtUltPed());
+					if(dataItem.isBefore(LocalDate.now().minusDays(qtdConvInt))) {
+						DateTimeFormatter padraoBrasil = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+						registro.setDtUltPed(dataItem.format(padraoBrasil));
+					//System.out.println(registro.getCdProd() +" - " +dataItem);	
+					
+				//	Period DiasSemVenda = Period.between(dataItem, dataItem.now());
+				//	registro.setQtdDiasSemVenda(DiasSemVenda."");
+					itensAtivos.add(registro);
+					
+					
+					}
+					
+					
+				}
+				
+	
+				
+				
+			}
+							
+		}catch(SQLException e) {
+				throw new RuntimeException(e);
+		}
+		
+		
+		
+		
+		return itensAtivos;
+	}
 	
 	
+	public String numProdUltimoPedido(String cdProd) {
+		
+		String sql="select top 1 i.cd_prod, i.nu_ped, i.dt_fatur from it_pedv i\r\n" + 
+				"\r\n" + 
+				"\r\n" + 
+				"where \r\n" + 
+				"i.cd_prod="+cdProd+" and\r\n" + 
+				"i.cd_emp=13\r\n" + 
+				"\r\n" + 
+				" order by dt_fatur desc ";
+		
+		String numUltPed=null;
+		
+		try {
+			PreparedStatement stmt = this.connectionSqlServer.prepareStatement(sql);
+			ResultSet rs = stmt.executeQuery();
+										
+			while(rs.next()) {
+				numUltPed=rs.getString(2);
+				
+			}
+							
+		}catch(SQLException e) {
+				throw new RuntimeException(e);
+		}
+		
+		
+		return numUltPed;
+		
+	}
+	
+public String dtProdUltimoPedido(String cdProd) {
+		
+		String sql="select top 1 i.cd_prod, i.nu_ped, \r\n" + 
+				"cast(i.dt_fatur as date) \r\n" + 
+				"from it_pedv i\r\n" + 
+				"\r\n" + 
+				"\r\n" + 
+				"where \r\n" + 
+				"i.cd_prod="+cdProd+" and\r\n" + 
+				"i.cd_emp=13\r\n" + 
+				"\r\n" + 
+				" order by dt_fatur desc  ";
+		
+		
+		
+		String dtUltPed=null;
+		
+		try {
+			PreparedStatement stmt = this.connectionSqlServer.prepareStatement(sql);
+			ResultSet rs = stmt.executeQuery();
+										
+			while(rs.next()) {
+				dtUltPed=rs.getString(3);
+				
+			}
+							
+		}catch(SQLException e) {
+				throw new RuntimeException(e);
+		}
+		
+		
+		return dtUltPed;
+		
+	}
 	
 
 }

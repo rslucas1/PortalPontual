@@ -28,7 +28,6 @@
 							<th>Cd Cli</th>
 							<th>Cliente</th>
 							<th>Valor</th>
-							<th>Status</th>
 							<th>Situação</th>
 						</tr>
 						
@@ -43,7 +42,6 @@
 							<td>${pedidosdiario.cd_cliente}</td>
 							<td>${pedidosdiario.desc_cliente}</td>
 							<td>${pedidosdiario.valor}</td>
-							<td>${pedidosdiario.status}</td>
 							<td>${pedidosdiario.situacao}</td>
 						</tr>
 							</c:forEach>

@@ -20,10 +20,12 @@
 				<h3 class="central-titulo ">RELATÓRIOS ANALÍTICOS</H3>
 
 			</div>
+				<a href="descFin" class="btn btn-warning btn-lg">DESCONTO FINANCEIRO</a>
+				<a href="analiseProdutos" class="btn btn-warning btn-lg">PRODUTOS ULT. SAÍDAS</a>
+				<a href="tradeIn" class="btn btn-warning btn-lg">TRADE-IN</a>
+			</div>
 			
-			<a href="descFin" class="btn btn-warning btn-lg">DESCONTO FINANCEIRO</a>
-			
-		</div>
+	
 		
 
 		</div>		

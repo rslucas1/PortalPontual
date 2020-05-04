@@ -26,8 +26,13 @@ public class JdbcPositivacaoDao {
 
 	public List<Cliente> getcarteiraClientes(String cd_target) {
 
-		String sql = "select distinct\r\n" + "cd_clien,\r\n" + "nome\r\n" + "from cliente \r\n" + "where cd_vend = "
-				+ "'" + cd_target + "'";
+		String sql = "select vc.cd_clien, c.nome from vend_cli vc\r\n" + 
+				"\r\n" + 
+				"join cliente c\r\n" + 
+				"on vc.cd_clien = c.cd_clien\r\n" + 
+				"\r\n" + 
+				"where vc.cd_vend='"+cd_target+"'\r\n" + 
+				"AND prioritario=1";
 
 		List<Cliente> carteira = new ArrayList<>();
 
