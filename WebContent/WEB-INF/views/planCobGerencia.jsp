@@ -14,7 +14,7 @@
 			<div class="col-sm-12">
 				<div class="row">
 					<H3 class="central-relatorio">
-						PLANO DE COBERTURA - GERENCIA</br>
+						PLANO DE COBERTURA - EQUIPES</br>
 					</H3>
 <%-- 					<h4 class="central-relatorio">${equipe.cdEquipe} - --%>
 <%-- 						${equipe.descEquipe} ${equipe.descGerencia}</h4> --%>

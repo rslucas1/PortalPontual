@@ -30,6 +30,8 @@ public class JdbcPlanilhaDeSetores {
 		System.out.println("Entrou no método com cd: "+urlCdEquipe);
 		
 		List<PlanilhaDeSetores> planilhaDeSetores = new ArrayList<>();
+		List<PlanilhaDeSetores> qtdClientes = new ArrayList<>();
+		
 		String filtro="";
 		
 		if(urlCdEquipe.equals("GERAL")) {
@@ -54,35 +56,68 @@ public class JdbcPlanilhaDeSetores {
 				" ORDER BY gerencia_descricao,equipe_descricao";
 				
 				System.out.println(sql);
+				
+				
+				String QtdClienteCarteira = "select cd_vend as VENDEDOR, COUNT(cd_clien) as QUANTIDADE from vend_cli\r\n" + 
+						"\r\n" + 
+						"group by cd_vend";
 		
-//		try {
-//			PreparedStatement stmt = this.connection.prepareStatement(sql);
-//			ResultSet rs;
-//			while(rs.next()) {
-//				PlanilhaDeSetores registro = new PlanilhaDeSetores();			
-//				
-//				registro.setCodigoSup(rs.getString(1));
-//				registro.setCd_venda(rs.getString(2));
-//				registro.setNomeSupervisor(rs.getString(3));
-//				registro.setCd_guerra(rs.getString(4));
-//				registro.setCd_venda(rs.getString(5));
-//				registro.setNome(rs.getString(6));
-//				registro.setDataInicio(rs.getString(7));
-//				registro.setNomeGerente(rs.getString(8));
-//				registro.setTelefone("("+rs.getString(9)+") "+rs.getString(10));
-//				registro.setCpf(rs.getString(11));
-//				registro.setAtivo(rs.getString(12));
-//				
-//				planilhaDeSetores.add(registro);
-//				
-//			}
-//			
-//			
-//			
-//		}catch(SQLException e) {
-//			throw new RuntimeException(e);
-//			
-//		}
+		try {
+			PreparedStatement stmt = this.connection.prepareStatement(sql);
+			ResultSet rs = stmt.executeQuery();
+			while(rs.next()) {
+				PlanilhaDeSetores registro = new PlanilhaDeSetores();			
+				
+				registro.setCodigoSup(rs.getString(1));
+				registro.setCd_venda(rs.getString(2));
+				registro.setNomeSupervisor(rs.getString(3));
+				registro.setCd_guerra(rs.getString(4));
+				registro.setCd_venda(rs.getString(5));
+				registro.setNome(rs.getString(6));
+				registro.setDataInicio(rs.getString(7));
+				registro.setNomeGerente(rs.getString(8));
+				registro.setTelefone("("+rs.getString(9)+") "+rs.getString(10));
+				registro.setCpf(rs.getString(11));
+				registro.setAtivo(rs.getString(12));
+				
+				planilhaDeSetores.add(registro);
+				
+			}
+			
+			
+			PreparedStatement stmt2 = this.connection.prepareStatement(QtdClienteCarteira);
+			ResultSet rs2 = stmt2.executeQuery();
+			
+			while(rs2.next()) {
+				
+				PlanilhaDeSetores qtdCliente = new PlanilhaDeSetores();
+				
+				qtdCliente.setCd_venda(rs2.getString(1));
+				qtdCliente.setQtdCliente(rs2.getString(2));
+				
+				
+				qtdClientes.add(qtdCliente);
+				
+				
+			}
+			
+			for(PlanilhaDeSetores p : planilhaDeSetores){
+				for(PlanilhaDeSetores qtdCli : qtdClientes) {
+					if(p.getCd_venda().equals(qtdCli.getCd_venda())) {
+						p.setQtdCliente(qtdCli.getQtdCliente());
+						
+						break;
+						
+					}					
+				}
+			}
+			
+			
+			
+		}catch(SQLException e) {
+			throw new RuntimeException(e);
+			
+		}
 		
 		
 				

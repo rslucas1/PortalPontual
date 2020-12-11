@@ -11,9 +11,39 @@ public class PedidosDiario extends Cliente {
 	private String situacao;
 	private int qtdPedido;
 	private double valorTotal;
+	private String empresa;
+	String dataPedido;
+	private String nota, vlMoeda;
 	
 	
 	
+		
+	
+	
+	public String getVlMoeda() {
+		return vlMoeda;
+	}
+	public void setVlMoeda(String vlMoeda) {
+		this.vlMoeda = vlMoeda;
+	}
+	public String getNota() {
+		return nota;
+	}
+	public void setNota(String nota) {
+		this.nota = nota;
+	}
+	public String getDataPedido() {
+		return dataPedido;
+	}
+	public void setDataPedido(String dataPedido) {
+		this.dataPedido = dataPedido;
+	}
+	public String getEmpresa() {
+		return empresa;
+	}
+	public void setEmpresa(String empresa) {
+		this.empresa = empresa;
+	}
 	public int getQtdPedido() {
 		return qtdPedido;
 	}

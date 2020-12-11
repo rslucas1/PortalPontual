@@ -43,7 +43,7 @@ private Connection connectionSqlServer;
 			} else if (perfil.equals("SUPERVISOR")){
 				
 				String cd_equipe = new JdbcHierarquia().getCdEquipe(cdVenda);
-				filtro="AND eq.cd_equipe='"+cd_equipe+"'";
+				filtro="AND eq.cd_vend_sup='"+cdVenda+"'";
 				
 			}
 				
@@ -67,7 +67,9 @@ private Connection connectionSqlServer;
 						"gr.descricao AS GERENCIA,\r\n" + 
 						"eq.cd_equipe,\r\n" + 
 						"eq.descricao AS EQUIPE,\r\n" +
-						"c.cd_area\r\n"+
+						"c.cd_area,\r\n"+
+						"tc.ddd as ddd,\r\n" + 
+						"tc.numero as numero"+
 						"\r\n" + 
 						"from cliente c\r\n" + 
 						"\r\n" + 
@@ -92,7 +94,12 @@ private Connection connectionSqlServer;
 						"join gerencia gr\r\n" + 
 						"on gr.cd_gerencia = eq.cd_gerencia\r\n" + 
 						"\r\n" + 
-						"WHERE vc.cd_vend!='990LG001' and gr.cd_emp=13 and eq.cd_equipe not in ('1', 'PC05', 'PC50')\r\n" +
+						
+						"left join tel_cli tc\r\n" + 
+						"on tc.cd_clien=c.cd_clien\r\n" + 
+						"\r\n" + 
+						
+						"WHERE vc.cd_vend!='990LG001' and gr.cd_emp=13 and eq.cd_equipe not in ('1', 'PC05', 'PC50') and tc.seq=1\r\n" +
 						filtro+
 						
 						"ORDER BY GERENCIA, EQUIPE";
@@ -130,9 +137,10 @@ private Connection connectionSqlServer;
 						registro.setCdEquipe(rs.getString(18));
 						registro.setDescEquipe(rs.getString(19));
 						registro.setArea(rs.getString(20));
+						registro.setTelefone("("+rs.getString(21)+") "+rs.getString(22));
 						
 						clientesPlanCobConsolidado.add(registro);
-						
+											
 						
 					}				
 					

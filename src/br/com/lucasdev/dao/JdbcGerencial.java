@@ -63,7 +63,7 @@ public class JdbcGerencial {
 				"WHERE\r\n" + 
 				"	nota.situacao IN ('AB','FA') \r\n" + 
 				"	AND nota.vl_desc_fin > 0 \r\n" + 
-				"	AND nota.cd_emp = 13 \r\n" + 
+				"	AND nota.cd_emp  IN (13, 20) \r\n" + 
 				"	--AND ped.nu_ped = 938516\r\n" + 
 				"	AND nota.vl_desc_fin > 0\r\n" + 
 				"	AND nota.dt_emis between "+ periodo + 

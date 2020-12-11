@@ -2,13 +2,21 @@ package br.com.lucasdev.modelo.positivacao;
 
 public class ClienteDetalhado extends Cliente {
 	private String tp_Cli, fantasia, cgc_cpf, grupoCli, logradouro, numero, 
-	cep, segmento, area, bairro, municipio, distrito, vendedor, situacao, dtUltimaCompra, cdVendedor, nomeGuerraVend, descGerencia, cdEquipe, descEquipe;
+	cep, segmento, area, bairro, municipio, distrito, vendedor, situacao, dtUltimaCompra, cdVendedor, nomeGuerraVend, descGerencia, cdEquipe, descEquipe, telefone;
 
 	
 	
 	
 	public String getDescGerencia() {
 		return descGerencia;
+	}
+
+	public String getTelefone() {
+		return telefone;
+	}
+
+	public void setTelefone(String telefone) {
+		this.telefone = telefone;
 	}
 
 	public void setDescGerencia(String descGerencia) {

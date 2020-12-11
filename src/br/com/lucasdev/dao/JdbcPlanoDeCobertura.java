@@ -33,12 +33,17 @@ public class JdbcPlanoDeCobertura {
 
 	}
 
-	public Equipe getEquipe(String cdVend) {
-		String sql = "select\r\n" + "e.cd_equipe as cd_equipe, \r\n" + "e.descricao as desc_equipe, \r\n"
+	public List<Equipe> getEquipe(String cdVend) {
+		
+		String sql = "select distinct\r\n" + "e.cd_equipe as cd_equipe, \r\n" + "e.descricao as desc_equipe, \r\n"
 				+ "g.descricao as desc_gerencia\r\n" + "from equipe e \r\n" + "\r\n"
 				+ "join gerencia g on e.cd_gerencia=g.cd_gerencia\r\n"
-				+ "join vendedor v on v.cd_equipe=e.cd_equipe\r\n" + "\r\n" + "where v.cd_vend='" + cdVend + "'";
-		Equipe equipe = new Equipe();
+				+ "join vendedor v on v.cd_equipe=e.cd_equipe\r\n" + "\r\n" + "where e.cd_vend_sup='" + cdVend + "' and e.cd_emp IN (13, 20)";
+		
+		System.out.println(sql);
+		
+		
+		List<Equipe> equipe = new ArrayList<>();
 
 		try {
 			PreparedStatement stmt = this.connectionSqlServer.prepareStatement(sql);
@@ -46,10 +51,13 @@ public class JdbcPlanoDeCobertura {
 			ResultSet rs = stmt.executeQuery();
 
 			while (rs.next()) {
-
-				equipe.setCdEquipe(rs.getString("cd_equipe"));
-				equipe.setDescEquipe(rs.getString("desc_equipe"));
-				equipe.setDescGerencia(rs.getString("desc_gerencia"));
+				Equipe registro = new Equipe();
+				registro.setCdEquipe(rs.getString("cd_equipe"));
+				registro.setDescEquipe(rs.getString("desc_equipe"));
+				registro.setDescGerencia(rs.getString("desc_gerencia"));
+				
+				
+				equipe.add(registro);
 
 			}
 
@@ -163,7 +171,7 @@ public class JdbcPlanoDeCobertura {
 		+ "				INNER JOIN grp_faix gr\r\n" + "				ON vd.cd_grupo = gr.cd_grupo\r\n"
 		+ "			ON no.cd_vend = vd.cd_vend			\r\n" + "\r\n" + "		ON itn.nu_nf = no.nu_nf \r\n"
 		+ "\r\n" + "\r\n" + "\r\n" + "WHERE     \r\n" + "	no.situacao IN ('AB', 'DP')\r\n"
-		+ "	AND	no.tipo_nf = 'S' \r\n" + "	AND	no.cd_emp  IN (13)\r\n"
+		+ "	AND	no.tipo_nf = 'S' \r\n" + "	AND	no.cd_emp  IN (13, 20)\r\n"
 		+ "	AND	ntped.tp_ped IN ('BE', 'BF', 'BS', 'TR', 'VC', 'VE', 'VP', 'VS', 'BP', 'BI', 'VB', 'SR','AS','IP','SL')\r\n"
 		+ "	AND no.dt_emis  BETWEEN " + periodo + "	and cl.cd_clien IN (" + inClintes + ")\r\n" + "\r\n" + "\r\n"
 		+ "	GROUP BY\r\n" + "	DATEPART(dd,no.dt_emis),no.dt_emis,\r\n" + "	 no.cd_clien,\r\n"
@@ -389,7 +397,7 @@ public class JdbcPlanoDeCobertura {
 
 		String sql = "select e.cd_gerencia from vendedor v\r\n" + "\r\n"
 				+ "join equipe e on v.cd_equipe = e.cd_equipe\r\n" + "\r\n" + "where v.cd_vend='" + cd_vendedor
-				+ "' and e.cd_emp=13";
+				+ "' and e.cd_emp IN (13, 20)";
 
 		try {
 			PreparedStatement stmt = connectionSqlServer.prepareStatement(sql);
@@ -442,7 +450,7 @@ public class JdbcPlanoDeCobertura {
 		return gerencia;
 	}
 	
-public List<ColunasMesesBody> getPlanoDeCobConsolidado(String periodo, String perfil, String cdVenda, String industria) {
+	public List<ColunasMesesBody> getPlanoDeCobConsolidado(String periodo, String perfil, String cdVenda, String industria) {
 		
 		String filtroFabricante=industria;
 		
@@ -466,6 +474,7 @@ public List<ColunasMesesBody> getPlanoDeCobConsolidado(String periodo, String pe
 			registro.setFantasia(c.getFantasia());
 			registro.setTp_Cli(c.getTp_Cli());
 			registro.setCgc_cpf(c.getCgc_cpf());
+			registro.setTelefone(c.getTelefone());
 			registro.setGrupoCli(c.getGrupoCli());
 			registro.setSegmento(c.getSegmento());
 			registro.setArea(c.getArea());
@@ -553,9 +562,10 @@ public List<ColunasMesesBody> getPlanoDeCobConsolidado(String periodo, String pe
 		+ "WHERE "
 		+ industria
 		+ "no.situacao IN ('AB', 'DP')\r\n"
-		+ "	AND	no.tipo_nf = 'S' \r\n" + "	AND	no.cd_emp  IN (13)\r\n"
+		+ "	AND	no.tipo_nf = 'S' \r\n" + "	AND	no.cd_emp  IN (13, 20)\r\n"
 		+ "	AND	ntped.tp_ped IN ('BE', 'BF', 'BS', 'TR', 'VC', 'VE', 'VP', 'VS', 'BP', 'BI', 'VB', 'SR','AS','IP','SL')\r\n"
 		+ "	AND no.dt_emis  BETWEEN " + periodo + "	and cl.cd_clien IN (" + inClintes + ")\r\n" + "\r\n" + "\r\n"
+//		+ "	AND no.dt_emis  BETWEEN " + "'2018-08-01 00:00:00' AND '2019-07-31 00:00:00'" + "	and cl.cd_clien IN (" + inClintes + ")\r\n" + "\r\n" + "\r\n"
 		+ "	GROUP BY\r\n" + "	DATEPART(dd,no.dt_emis),no.dt_emis,\r\n" + "	 no.cd_clien,\r\n"
 		+ "	no.cd_emp,\r\n" + "	 no.nu_ped, \r\n" + "	 no.nome,\r\n" + "	 vd.nome_gue,\r\n"
 		+ "	 vd.cd_vend,\r\n" + "	 vd.nome,\r\n" + "	  vd.cd_equipe\r\n" + "	 \r\n" + ") em_linha\r\n"

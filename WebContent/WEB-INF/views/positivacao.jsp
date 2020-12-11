@@ -51,9 +51,8 @@
 
 
 					<div class="inline">
-						<input class="btn btn-primary" type="submit" name="acionado"
-							value="POSITIVADOS" /> <input class="btn btn-danger"
-							type="submit" name="acionado" value="NÃO POSITIVADOS" />
+						<input class="btn btn-primary" type="submit" name="acionado" value="POSITIVADOS" /> 
+						<input class="btn btn-danger"  type="submit" name="acionado" value="NÃO POSITIVADOS" />
 					</div>
 
 

@@ -9,27 +9,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.lucasdev.modelo.relatorios.PedidosDiario;
+import br.com.lucasdev.modelo.relatorios.PlanilhaDeSetores;
 import br.com.lucasdev.modelo.relatorios.Vendedor;
 
 public class JdbcPedidosDiario {
-	private Connection connectionSqlServer;
-	LocalDate hoje = LocalDate.now();
 	
-	public JdbcPedidosDiario (){
+	private Connection connection;
+	
+	
+	public JdbcPedidosDiario() {
 		
-	try {
-		connectionSqlServer = new ConnectionFactory().getConnectionSqlServer();
+		try {
+			connection = new ConnectionFactory().getConnectionSqlServer();
 			
-	}catch(SQLException e) {
+		}catch(SQLException e) {
 			throw new RuntimeException(e);
 		}
-
+		
 	}
 	
-	public List <PedidosDiario> pedidosDiarioGeral(){
+	
+	public List <PedidosDiario> pedidosDiarioGeral(String dataInicial, String dataFinal, String situacaoNota){
 		List <PedidosDiario> pedidosdiario = new ArrayList<>();
 	
-		String sql = "select p.nu_ped, p.cd_vend, v.nome, c.cd_clien, c.nome AS 'desc', p.valor_tot ,  p.situacao\r\n" + 
+		String sql = "select DISTINCT p.nu_ped, p.cd_vend, v.nome, c.cd_clien, c.nome AS 'desc', p.valor_tot ,  n.situacao, E.nome_fant, CONVERT(varchar(10),p.dt_cad,103) as dt_cad\r\n" + 
 				"\r\n" + 
 				"from ped_vda p\r\n" + 
 				"\r\n" + 
@@ -38,17 +41,28 @@ public class JdbcPedidosDiario {
 				"\r\n" + 
 				"join cliente c\r\n" + 
 				"on c.cd_clien = p.cd_clien\r\n" + 
-				"\r\n" + 
+				
+				"JOIN EMPRESA E\r\n" + 
+				"on p.cd_emp=e.cd_emp\r\n"+
+				"\r\n" +
+				
+				
+				"LEFT JOIN nota N \r\n" + 
+				"ON N.nu_ped = P.nu_ped AND N.cd_emp=P.cd_emp\r\n"+
+				
+				
 				"where \r\n" + 
-				"	p.dt_cad BETWEEN '"+hoje+" 00:00:00' AND '"+hoje+" 23:59:59' AND \r\n" + 
-				"	p.cd_emp=13  and\r\n" + 
-				"	p.tp_ped not in ('PE','NP', 'MD') AND \r\n" + 
-				"   p.situacao NOT IN ('CA')";
+				"	p.dt_cad BETWEEN '"+dataInicial+" 00:00:00' AND '"+dataFinal+" 23:59:59' AND \r\n" + 
+				"	p.cd_emp IN (13, 20)  and\r\n" + 
+				"	p.tp_ped not in ('PE','NP', 'MD', 'VA','OP', 'RC', 'SP', 'CC') AND \r\n" + 
+				"   p.situacao NOT IN ('CA')  and p.cd_clien NOT IN (87379, 62379)" +
+					situacaoNota +
+					" order by 9 DESC";
 		
 				System.out.println(sql);
 		
 		try {
-			PreparedStatement stmt = connectionSqlServer.prepareStatement(sql);
+			PreparedStatement stmt = (PreparedStatement) connection.prepareStatement(sql);
 			ResultSet rs = stmt.executeQuery();
 							
 			while(rs.next()) {
@@ -60,7 +74,9 @@ public class JdbcPedidosDiario {
 				registro.setCd_cliente(rs.getInt(4));
 				registro.setDesc_cliente(rs.getString(5));
 				registro.setValor(rs.getDouble(6));
-				registro.setSituacao(rs.getString(7));
+				registro.setSituacao(rs.getString(7)!=null ? "FATURADO": "-");
+				registro.setEmpresa(rs.getString(8));
+				registro.setDataPedido(rs.getString(9));
 			
 				pedidosdiario.add(registro);
 				
@@ -74,7 +90,7 @@ public class JdbcPedidosDiario {
 	}
 	
 	
-	public List <PedidosDiario> pedidosDiarioEquipe(List lista){
+	public List <PedidosDiario> pedidosDiarioEquipe(List lista, String dataInicial, String dataFinal, String situacaoNota){
 		
 		List<Vendedor> listaVendedores = new ArrayList<>();
 		listaVendedores=lista;
@@ -97,7 +113,7 @@ public class JdbcPedidosDiario {
 		
 		List <PedidosDiario> pedidosdiario = new ArrayList<>();
 				
-		String sql = "select p.nu_ped, p.cd_vend, v.nome, c.cd_clien, c.nome AS 'desc', p.valor_tot , p.situacao\r\n" + 
+		String sql = "select DISTINCT p.nu_ped, p.cd_vend, v.nome, c.cd_clien, c.nome AS 'desc', p.valor_tot , n.situacao,E.nome_fant, CONVERT(varchar(10),p.dt_cad,103) as dt_cad\r\n" + 
 				"\r\n" + 
 				"from ped_vda p\r\n" + 
 				"\r\n" + 
@@ -105,19 +121,28 @@ public class JdbcPedidosDiario {
 				"on p.cd_vend=v.cd_vend\r\n" + 
 				"\r\n" + 
 				"join cliente c\r\n" + 
-				"on c.cd_clien = p.cd_clien\r\n" + 
+				"on c.cd_clien = p.cd_clien\r\n" +
+				
+				"JOIN EMPRESA E\r\n" + 
+				"on p.cd_emp=e.cd_emp\r\n"+
+
+				"LEFT JOIN nota N \r\n" + 
+				"ON N.nu_ped = P.nu_ped AND N.cd_emp=P.cd_emp\r\n"+
+				
 				"\r\n" + 
 				"where \r\n" + 
 				"	p.cd_vend IN ("+inVendedores+") and \r\n" + 
-				"	p.dt_cad BETWEEN '"+hoje+" 00:00:00' AND '"+hoje+" 23:59:59' AND \r\n" + 
-				"	p.cd_emp=13  and\r\n" + 
-				"	p.tp_ped not in ('PE','NP') AND \r\n" + 
-				"   p.situacao NOT IN ('CA')";
+				"	p.dt_cad BETWEEN '"+dataInicial+" 00:00:00' AND '"+dataFinal+" 23:59:59' AND \r\n" + 
+				"	p.cd_emp IN (13, 20)  and\r\n" + 
+				"	p.tp_ped not in ('PE','NP', 'MD', 'VA','OP', 'RC', 'SP', 'CC') AND \r\n" + 
+				"   p.situacao NOT IN ('CA')  and p.cd_clien NOT IN (87379, 62379)"+
+				situacaoNota +
+				" order by 9 DESC";
 		
 				System.out.println(sql);
 		
 		try {
-			PreparedStatement stmt = connectionSqlServer.prepareStatement(sql);
+			PreparedStatement stmt = (PreparedStatement) connection.prepareStatement(sql);
 			ResultSet rs = stmt.executeQuery();
 							
 			while(rs.next()) {
@@ -129,7 +154,8 @@ public class JdbcPedidosDiario {
 				registro.setCd_cliente(rs.getInt(4));
 				registro.setDesc_cliente(rs.getString(5));
 				registro.setValor(rs.getDouble(6));
-				registro.setSituacao(rs.getString(7));
+				registro.setSituacao(rs.getString(7)!=null ? "FATURADO": "-");
+				registro.setEmpresa(rs.getString(8));
 			
 				pedidosdiario.add(registro);
 				

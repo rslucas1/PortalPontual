@@ -18,57 +18,67 @@
 				<form action="tradeIn" method="post">
 						<fieldset class="dropdownTradeIndset">
 							<legend>Indústia</legend>
-							    <select class="form-control" id="exampleFormControlSelect1" name="industria"  style="width:200px;" disabled="">
+							    <select class="form-control" id="exampleFormControlSelect1" name="industria"  style="width:200px;">
 
 							    
 							      
 							    <jsp:useBean id="dao" class="br.com.lucasdev.modelo.relatorios.Industria" />
 							    <c:forEach var="industria" items="${industria}">
+							      
 							      <option value="${industria.cod_industria}">${industria.desc_industria}</option>
-								<option value="todas">TODAS</option>
+							      <option value="todas">TODAS</option>
+								
 								</c:forEach>
 							    </select>
 						</fieldset>
 					
-							<legend>Segmento</legend>
-								<div class="form-check">
-							    	<input type="checkbox" class="form-check-input" name="segmento" value="ADULTO">
-							    	<label class="form-check-label checkTradeIn">SEG ADULTO</label>
-							    	
-							    	<input type="checkbox" class="form-check-input" name="segmento" value="INFANTIL">
-							    	<label class="form-check-label checkTradeIn">SEG INFANTIL</label>
-							    	
-							    	<input type="checkbox" class="form-check-input" name="segmento" value="LIMPEZA">
-							    	<label class="form-check-label checkTradeIn">SEG LIMPEZA</label>
-							    	
-							    	<input type="checkbox" class="form-check-input" name="segmento" value="HIGIENE">
-							    	<label class="form-check-label checkTradeIn">SEG HIGIENE</label>	
-							    	
-							       	<input type="checkbox" class="form-check-input" name="segmento" value="PERFUMARIA">
-							    	<label class="form-check-label checkTradeIn">SEG PERFUMARIA</label>
-							    	
-							    	<input type="checkbox" class="form-check-input" name="segmento" value="ALIMENTOS">
-							    	<label class="form-check-label checkTradeIn" >SEG ALIMENTOS</label>								    	
-							  </div>
+						<fieldset>
+						<legend>Segmento</legend>
+							<table class="tradeInCategoria">
+								<jsp:useBean id="dao4" class="br.com.lucasdev.modelo.relatorios.Segmento" />
+								<c:forEach var="segmentosJdbc" items="${segmentosJdbc}">
+								<tr>
+									<td><input type="checkbox" class="form-check-input" name="segmento" value="true"${segmentosJdbc.ativo ? 'checked' : 'unchecked'}>
+							    		<label class="form-check-label">${segmentosJdbc.desc_segmento}</label>
+							    	</td>
+								</tr>
+								</c:forEach>
+							</table>
 						</fieldset>
 						
 						<fieldset class="dropdownTradeIndset">
 							<legend>Equipe</legend>
-							    <select class="form-control inline" id="exampleFormControlSelect1" name="equipe" style="width:300px;" disabled="">
+							    <select class="form-control inline" id="exampleFormControlSelect1" name="equipe" style="width:300px;" >
 								   	<option value="${equipe.cdEquipe}">${equipe.descEquipe}</option>
-								
-								  </select>
+							  </select>
 						</fieldset>
 						
 						
 						<fieldset class="dropdownTradeIndset">
 							<legend>Período</legend>
-							    Inicio: <input id="date" type="date" name="dataInicial" value="${dataInicial}" disabled="">					
-								Fim:   <input id="date" type="date" name="dataFinal" value="${dataFinal}" disabled="">
+							    Inicio: <input id="date" type="date" name="dataInicial" value="${dataInicial}" >					
+								Fim:   <input id="date" type="date" name="dataFinal" value="${dataFinal}" >
 						</fieldset>
 				
-						<input class="btn btn-success" type="submit" value="APLICAR" style="margin-top:15px;"/>						
+											
+						<fieldset class="dropdownTradeIndset">
+							<legend>Categoria</legend>
+								<table class="tradeInCategoria">
+									<jsp:useBean id="dao2" class="br.com.lucasdev.modelo.relatorios.Categoria" />
+									<c:forEach var="getJdbccategorias" items="${getJdbccategorias}">
+										<tr>
+											<td><input type="checkbox" class="form-check-input" name="categorias" value="${getJdbccategorias.cod_categoria}">
+									    		<label class="form-check-label">${getJdbccategorias.desc_categoria}</label>
+									    	</td>
+										</tr>
+								
+								
+									</c:forEach>
+								</table>
 				
+							</fieldset>
+					<input class="btn btn-success" type="submit" value="APLICAR" style="margin-top:15px;"/>	
+					
 					</form>
 			</div>
 

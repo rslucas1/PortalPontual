@@ -13,15 +13,38 @@
 	<main>
 		<div class="Painel">
 			<div class="subPainel1100">
-				<H3 class="central-titulo">PEDIDOS DIÁRIO</H3>
+				<H3 class="central-titulo" style="margin-bottom:20px;">ENTRADA DE PEDIDOS DIÁRIO</H3>
+				<div style="margin-bottom:20px;">
+					<form method="post" action="pedDiario">
+					
+						<span>
+						    De: <input id="date" type="date" name="dataInicial" value="${dataInicial}" required>					
+							Até:   <input id="date" type="date" name="dataFinal" value="${dataFinal}" required>
+							
+							<input type="checkbox" class="form-check-input" value="checked" name="statusFaturado" ${checkFaturado} style="margin-left:20px;">
+							<label>Faturado</label>
+								
+							<input type="checkbox" class="form-check-input inline" value="checked" name="statusAberto" ${checkAberto}>								
+							<label>Aberto</label>
+							
+							<input class="btn btn-success" type="submit" name="operacao" value="Buscar" style="margin-left:10px;"/>
+								
+						</span>
+					
+					</form>
+				
+				</div>
+				
 				<div class="pedDiadio-totGeral">
 					<div>Valor Total: ${totalPedidos}</div>
 					<div>Quantidade: ${qtdPedidos}</div>
 				</div>
 				
 				<div class="pedidosDiarioTabela">
-					<table class="table table-bordered table-hover table-sm table-striped">
+					<table class="table table-bordered table-hover table-sm table-striped tabela-planCob-Vend" style= "white-space: nowrap">
 						<tr>
+							<th>Empresa</th>
+							<th>DT PEDIDO</th>
 							<th>Pedido</th>
 							<th>Cd Vend</th>
 							<th>Vendedor</th>
@@ -36,6 +59,8 @@
 							<c:forEach var="pedidosdiario" items="${pedidosdiario}">
 						
 						<tr>
+							<td>${pedidosdiario.empresa}</td>
+							<td>${pedidosdiario.dataPedido}</td>
 							<td>${pedidosdiario.numPedido}</td>
 							<td>${pedidosdiario.cdVendedor}</td>
 							<td>${pedidosdiario.nomeVendedor}</td>

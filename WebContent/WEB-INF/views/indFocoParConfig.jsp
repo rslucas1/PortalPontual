@@ -86,7 +86,7 @@
 								<td>${vendedoresAtivos.equipe}</td>
 								<td>
 									<div class="custom-control custom-checkbox">
-   										 <input type="checkbox" class="custom-control-input" value="true"${vendedoresAtivos.foco ? 'checked' : 'unchecked'} name="box">
+   										 <input type="checkbox" class="custom-control-input" value="true"c name="box">
     
 									</div>
 								</td>

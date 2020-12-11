@@ -94,7 +94,7 @@ public class JdbcHierarquia {
 						"on g.cd_vend_ger=v.cd_vend\r\n" + 
 						"\r\n" + 
 						"where \r\n" + 
-						"	g.cd_emp=13 and\r\n" + 
+						"	g.cd_emp IN (13, 20) and\r\n" + 
 						"	g.ativo=1 and\r\n" + 
 						"	cd_gerencia not in ('PC01','N/13', 'PC03', 'PC04', 'PC05', 'PC07', 'PC08')";
 				
@@ -125,7 +125,7 @@ public class JdbcHierarquia {
 		
 		
 		String sql="select g.cd_gerencia from gerencia g\r\n" + 
-				"where g.cd_emp=13 and\r\n" + 
+				"where g.cd_emp IN (13, 20) and\r\n" + 
 				"g.ativo=1 and\r\n" + 
 				"g.cd_vend_ger='"+cd_vendGer+"'";
 				
@@ -152,7 +152,7 @@ public class JdbcHierarquia {
 		
 		
 		String sql="select e.cd_equipe from equipe e\r\n" + 
-				"where e.cd_emp=13 and\r\n" + 
+				"where e.cd_emp IN (13, 20) and\r\n" + 
 				"e.ativo=1 and\r\n" + 
 				"e.cd_vend_sup='"+cd_vendSup+"'";
 				
@@ -180,7 +180,7 @@ public class JdbcHierarquia {
 					" \r\n" + 
 					"from (\r\n" + 
 					"\r\n" + 
-					"select  cd_gerencia as cod , descricao from gerencia where ativo =1 and cd_emp =13 and cd_gerencia not in ('N/13','PC01','PC03','PC04','PC05','PC07','PC08','RM01','','')\r\n" + 
+					"select  cd_gerencia as cod , descricao from gerencia where ativo =1 and cd_emp  IN (13, 20) and cd_gerencia not in ('N/13','PC01','PC03','PC04','PC05','PC07','PC08','RM01','','')\r\n" + 
 					"UNION all\r\n" + 
 					"select cd_equipe  as cod , descricao from equipe where ativo =1 and cd_emp=13 and cd_equipe not in ('PC98','PC85','1','1001','RM02','','','','','','') )gerencia\r\n" + 
 					"\r\n" + 

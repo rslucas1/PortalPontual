@@ -1,5 +1,6 @@
 package br.com.lucasdev.controller;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
@@ -13,37 +14,60 @@ import javax.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import br.com.lucasdev.dao.ConnectionFactory;
+import br.com.lucasdev.dao.JdbcClienteXIndustria;
 import br.com.lucasdev.dao.JdbcConsultaCliente;
+import br.com.lucasdev.dao.JdbcDesempenhoDiario;
 import br.com.lucasdev.dao.JdbcEtapaPedido;
+import br.com.lucasdev.dao.JdbcExpedicaoCarregamento;
 import br.com.lucasdev.dao.JdbcGerencial;
 import br.com.lucasdev.dao.JdbcHierarquia;
+import br.com.lucasdev.dao.JdbcObjetivoVendedor;
 import br.com.lucasdev.dao.JdbcParConfigIndFoco;
+import br.com.lucasdev.dao.JdbcPedidoProducao;
 import br.com.lucasdev.dao.JdbcPedidosDiario;
 import br.com.lucasdev.dao.JdbcPlanilhaDeSetores;
 import br.com.lucasdev.dao.JdbcPlanoDeCobertura;
 import br.com.lucasdev.dao.JdbcPositivacaoDao;
+import br.com.lucasdev.dao.JdbcRedeVendedorIndustria;
+import br.com.lucasdev.dao.JdbcTracking;
 import br.com.lucasdev.dao.JdbcTradeIn;
 import br.com.lucasdev.dao.JdbcUsuarioDao;
+import br.com.lucasdev.dao.TesteOracle;
 import br.com.lucasdev.modelo.etapaPedidos.EtapaPedidoRelatorio;
 import br.com.lucasdev.modelo.positivacao.Cliente;
 import br.com.lucasdev.modelo.positivacao.ClienteDetalhado;
 import br.com.lucasdev.modelo.positivacao.PedidoPositivado;
 import br.com.lucasdev.modelo.positivacao.Positivacao;
+import br.com.lucasdev.modelo.relatorios.AcompanhamentoPedidos;
+import br.com.lucasdev.modelo.relatorios.Categoria;
+import br.com.lucasdev.modelo.relatorios.CodDescricao;
 import br.com.lucasdev.modelo.relatorios.ColunasMesesBody;
 import br.com.lucasdev.modelo.relatorios.ColunasMesesHead;
 import br.com.lucasdev.modelo.relatorios.DescontoFinanceiro;
+import br.com.lucasdev.modelo.relatorios.DesempenhoDiario;
 import br.com.lucasdev.modelo.relatorios.Equipe;
+import br.com.lucasdev.modelo.relatorios.ExpedicaoCarregamento;
 import br.com.lucasdev.modelo.relatorios.IndFocoParVendedor;
 import br.com.lucasdev.modelo.relatorios.Industria;
+import br.com.lucasdev.modelo.relatorios.Marca;
+import br.com.lucasdev.modelo.relatorios.ObjetivoVendedor;
+import br.com.lucasdev.modelo.relatorios.PedidoProducao;
 import br.com.lucasdev.modelo.relatorios.PedidosDiario;
 import br.com.lucasdev.modelo.relatorios.PlanilhaDeSetores;
 import br.com.lucasdev.modelo.relatorios.ProdNaoVendidos;
+import br.com.lucasdev.modelo.relatorios.Romaneio;
+import br.com.lucasdev.modelo.relatorios.Segmento;
+import br.com.lucasdev.modelo.relatorios.Tracking;
+import br.com.lucasdev.modelo.relatorios.TrackingExpedicao;
 import br.com.lucasdev.modelo.relatorios.Vendedor;
 import br.com.lucasdev.modelo.usuario.Usuario;
+import br.com.lucasdev.util.BetPeriodo;
 import br.com.lucasdev.util.BetUltimoAno;
 import br.com.lucasdev.util.Formata;
+import br.com.lucasdev.util.TrataVetorInSql;
 import br.com.ontex.JbdcOntex;
 import br.com.ontex.Relatorio;
 
@@ -52,11 +76,11 @@ public class PortalController {
 
 	@RequestMapping(value = {"/index", "/", ""})
 	public String index() {
-		
-		LocalDate dtInit = LocalDate.parse("2020-04-27");
+		  
+		LocalDate dtInit = LocalDate.parse("2020-07-27");
 		LocalDate hoje = LocalDate.now();
-			
-		if(hoje.isAfter(dtInit.plusDays(90))) {
+			 
+		if(hoje.isAfter(dtInit.plusDays(180))) {
 			
 			try {
 				
@@ -70,11 +94,14 @@ public class PortalController {
 			return "index.jsp";
 		}else {
 			
-			System.out.println("licença valida");
+			String teste;
+			
+//			teste = new TesteOracle().exec();
+			System.out.println("licença valida OK 1234");
 			return "index";
 		}
 		
-			
+			 
 	}
 
 	@RequestMapping("home")
@@ -233,14 +260,19 @@ public class PortalController {
 			
 			if (sessaoUsuario.getPerfil().equals("SUPERVISOR")) {
 				
-				List<Vendedor> vendedoresEquipe = new ArrayList<>();
-				Equipe equipe = new JdbcPlanoDeCobertura().getEquipe(sessaoUsuario.getCd_target());
-				vendedoresEquipe = new JdbcPlanoDeCobertura().getEquipeVendedores(equipe.getCdEquipe());
-
-				model.addAttribute("vendedoresEquipe", vendedoresEquipe);
-				model.addAttribute("equipe", equipe);
+//				List<Vendedor> vendedoresEquipe = new ArrayList<>();
+				List<Equipe> equipe = new ArrayList<>();
 				
-				return "planCobEquipe";
+				equipe = new JdbcPlanoDeCobertura().getEquipe(sessaoUsuario.getCd_target());
+//				vendedoresEquipe = new JdbcPlanoDeCobertura().getEquipeVendedores(equipe.getCdEquipe());
+
+				model.addAttribute("gerenciaEquipe", equipe);
+				
+				
+//				model.addAttribute("equipe", equipe);
+				
+						
+				return "planCobGerencia";
 
 			} else if (sessaoUsuario.getPerfil().equals("VENDEDOR")) {
 				
@@ -287,7 +319,7 @@ public class PortalController {
 	@RequestMapping("/planCobConsolidado")
 	public String planCobConsolidado(Usuario usuario, HttpSession session, Model model, HttpServletResponse response, HttpServletRequest request) {
 		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
-//		if (sessaoUsuario != null) {
+
 				String industria = request.getParameter("industria");
 				System.out.println(industria);
 				
@@ -397,6 +429,11 @@ public class PortalController {
 	@RequestMapping("/teste")
 	public String teste(Usuario usuario, HttpSession session, Model model) {
 		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
+		System.out.println("Executando Teste");
+		String teste;
+		
+		teste = new TesteOracle().exec();
+		
 
 		return "itensNaoVendidos";
 	}
@@ -467,37 +504,87 @@ public class PortalController {
 	}
 	
 	@RequestMapping("/pedDiario")
-	public String pedidosDiario(Model model, HttpSession session) {
+	public String pedidosDiario(Model model, HttpSession session, HttpServletRequest request) {
 		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
 		List<Vendedor> listaVendedores = new ArrayList<>();
 		
 		if (sessaoUsuario != null) {
-			List <PedidosDiario> pedidosdiario = new ArrayList<>();
 			
-			if(sessaoUsuario.getPerfil().equals("DIRETORIA") ||sessaoUsuario.getPerfil().equals("COMERCIAL")
-					||sessaoUsuario.getPerfil().equals("ADMINISTRADOR")) {
-					pedidosdiario = new JdbcPedidosDiario().pedidosDiarioGeral();
-							
-			}else if(sessaoUsuario.getPerfil().equals("GERENTE")) {
-				listaVendedores = new JdbcHierarquia().getEquipeVendedoresGerente(sessaoUsuario.getCd_target());
-				pedidosdiario = new JdbcPedidosDiario().pedidosDiarioEquipe(listaVendedores);
-
-			}else if(sessaoUsuario.getPerfil().equals("SUPERVISOR")) {
-				listaVendedores = new JdbcHierarquia().getEquipeVendedoresSupervisor(sessaoUsuario.getCd_target());
-				pedidosdiario = new JdbcPedidosDiario().pedidosDiarioEquipe(listaVendedores);
-			}else if(sessaoUsuario.getPerfil().equals("VENDEDOR")) {
-				model.addAttribute("logado", sessaoUsuario);	
-				return "homePage";
+			LocalDate hoje = LocalDate.now(); 
+			
+			String dataInicial;
+			String dataFinal;
+			String faturado;
+			String aberto;
+			
+			if(request.getParameter("operacao")==null) {
+				model.addAttribute("logado", sessaoUsuario);
+				model.addAttribute("dataInicial", hoje);
+				model.addAttribute("dataFinal", hoje);
+				model.addAttribute("checkFaturado", "checked");
+				model.addAttribute("checkAberto", "checked");
+				
+				return "pedidosDiario";
+								
+			}else {
+				
+				dataInicial = request.getParameter("dataInicial");
+				dataFinal = request.getParameter("dataFinal");
+				faturado = request.getParameter("statusFaturado");
+				aberto = request.getParameter("statusAberto");
+				
+				model.addAttribute("dataInicial", dataInicial);
+				model.addAttribute("dataFinal", dataFinal);
+				model.addAttribute("checkFaturado", faturado);
+				model.addAttribute("checkAberto", aberto);
+				
+				System.out.println(dataInicial);
+				System.out.println(dataFinal);
+				System.out.println(faturado);
+				System.out.println(aberto);
+				
+											
+			}
+			
+			String situacaoNota="";
+			
+			if(faturado!=null && aberto==null) {
+				
+				situacaoNota="\r\n AND n.situacao is not null";
+				
+			} else if (aberto!=null && faturado==null) {
+				
+				situacaoNota="\r\n AND n.situacao is null";
+				
 			}
 		
-
-			int qtdPedidos=0;
-			double totalPedidos=0;
-			for (PedidosDiario p : pedidosdiario) {
-				totalPedidos = totalPedidos+p.getValor();
-				qtdPedidos++;
-			}
 			
+				List <PedidosDiario> pedidosdiario = new ArrayList<>();
+				
+				if(sessaoUsuario.getPerfil().equals("DIRETORIA") ||sessaoUsuario.getPerfil().equals("COMERCIAL")
+						||sessaoUsuario.getPerfil().equals("ADMINISTRADOR")) {
+						pedidosdiario = new JdbcPedidosDiario().pedidosDiarioGeral(dataInicial,dataFinal, situacaoNota);
+								
+				}else if(sessaoUsuario.getPerfil().equals("GERENTE")) {
+					listaVendedores = new JdbcHierarquia().getEquipeVendedoresGerente(sessaoUsuario.getCd_target());
+					pedidosdiario = new JdbcPedidosDiario().pedidosDiarioEquipe(listaVendedores, dataInicial,dataFinal, situacaoNota);
+	
+				}else if(sessaoUsuario.getPerfil().equals("SUPERVISOR")) {
+					listaVendedores = new JdbcHierarquia().getEquipeVendedoresSupervisor(sessaoUsuario.getCd_target());
+					pedidosdiario = new JdbcPedidosDiario().pedidosDiarioEquipe(listaVendedores, dataInicial,dataFinal, situacaoNota);
+				}else if(sessaoUsuario.getPerfil().equals("VENDEDOR")) {
+					model.addAttribute("logado", sessaoUsuario);	
+					return "homePage";
+				}
+			
+	
+				int qtdPedidos=0;
+				double totalPedidos=0;
+				for (PedidosDiario p : pedidosdiario) {
+					totalPedidos = totalPedidos+p.getValor();
+					qtdPedidos++;
+				}
+				
 			
 			
 			String totalConver = Formata.moeda(totalPedidos);
@@ -593,20 +680,6 @@ public class PortalController {
 				
 				relatorio = new JbdcOntex().getRelatorio();
 				
-//				for(Relatorio r : relatorio) {
-//					
-//					System.out.println(
-//							r.getCod()+"|"+
-//							r.getRazao()+"|"+
-//							r.getCnpj()+"|"+
-//							r.getLimite()+"|"+
-//							r.getRecebimento()+"|"+
-//							r.getVlaberto()+"|"+
-//							r.getVlvencido()
-//							
-//							);
-//					
-//				}
 //				
 				model.addAttribute("relatorio", relatorio);
 				
@@ -636,14 +709,7 @@ public class PortalController {
 				
 				model.addAttribute("itensNaoVendidos", itensNaoVendidos);
 				
-				
-//				for (ProdNaoVendidos p : itensNaoVendidos ) {
-//					
-//					System.out.println(p.getCdProd()+" - "+p.getQtdDiasSemVenda() );
-//					
-//					
-//				}
-				
+							
 				
 				}
 			
@@ -686,11 +752,6 @@ public class PortalController {
 					model.addAttribute("industria", industria);
 					industria =null;
 					
-//					for (IndFocoParVendedor i : vendedoresAtivos) {
-//						System.out.println(i.getCd_venda()+" - "+i.isFoco());
-//						
-//					}
-					
 					return "indFocoParConfig";
 									
 				}
@@ -727,8 +788,6 @@ public class PortalController {
 		if(sessaoUsuario != null && sessaoUsuario.getPerfil().equals("ADMINISTRADOR")) {
 			model.addAttribute("logado", sessaoUsuario);
 			
-
-			
 				
 			return "parConfig";
 		}
@@ -737,21 +796,33 @@ public class PortalController {
 	}
 	
 	@RequestMapping("/desempenhoDiario")
-	public String desempenhoDiario(Usuario usuario, HttpSession session, Model model) {
+	public String desempenhoDiario(Usuario usuario, HttpSession session, Model model, HttpServletRequest request) {
 		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
 		if(sessaoUsuario != null) {
-			if(sessaoUsuario.getPerfil().equals("ADMINISTRADOR")||sessaoUsuario.getPerfil().equals("COMERCIAL")||sessaoUsuario.getPerfil().equals("DIRETORIA")) {
+			if(sessaoUsuario.getPerfil().equals("ADMINISTRADOR")||sessaoUsuario.getPerfil().equals("COMERCIAL")||sessaoUsuario.getPerfil().equals("DIRETORIA")||sessaoUsuario.getPerfil().equals("GERENTE")) {
 				model.addAttribute("logado", sessaoUsuario);
-				
-				return "desempenhoDiario";
-			
-			
+					
+				String mes=request.getParameter("mesSelecionado");
+				String ano=request.getParameter("anoSelecionado");
+								
+				if(mes==null && ano==null){
+					
+					return "desempenhoDiario";
+				}else {
+					int mesConvertido = Integer.parseInt(mes);
+					String periodo = new BetPeriodo().getPeriodo(mesConvertido, ano);
+					
+					List <DesempenhoDiario> desempenhoDiario = new ArrayList<>();
+					desempenhoDiario = new JdbcDesempenhoDiario().getDesempenhoDiario(periodo);
+					System.out.println("Tamanho da lista enviada " + desempenhoDiario.size());
+					
+					model.addAttribute("desempenhoDiario", desempenhoDiario);
+									
+					return "desempenhoDiario";
+				}
+								
 			}
-			
-
-			
 				
-			
 		}
 		
 		return "index";
@@ -761,11 +832,12 @@ public class PortalController {
 	public String planilhaDeSetores(Usuario usuario, HttpSession session, Model model, HttpServletRequest request) {
 		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
 		if(sessaoUsuario != null) {
-			if(sessaoUsuario.getPerfil().equals("ADMINISTRADOR")||sessaoUsuario.getPerfil().equals("COMERCIAL")||sessaoUsuario.getPerfil().equals("DIRETORIA")) {
+			if(sessaoUsuario.getPerfil().equals("ADMINISTRADOR")||sessaoUsuario.getPerfil().equals("COMERCIAL")||sessaoUsuario.getPerfil().equals("DIRETORIA")||sessaoUsuario.getPerfil().equals("GERENTE")) {
 				model.addAttribute("logado", sessaoUsuario);
 				System.out.println(request.getParameter("filtro"));
 				
 				if(request.getParameter("filtro")==null) {
+					System.out.println("aguardando o disparador de eventos");
 					return "planilhaDeSetores";
 					
 				} else {
@@ -774,13 +846,12 @@ public class PortalController {
 				
 						planilhaDeSetores = new JdbcPlanilhaDeSetores().getPlanilhaDeSetores(request.getParameter("filtro"));
 						
-						for (PlanilhaDeSetores p : planilhaDeSetores) {
-							System.out.println(p.getCd_venda());
-							
-							
-						}
-						
+						String btnDownload = "<a href= &ldquo;descFin&ldquo; class=&ldquo;btn btn-warning btn-lg&ldquo;>DESCONTO FINANCEIRO</a>";				
+												
 						model.addAttribute("planilhaDeSetores", planilhaDeSetores);
+						model.addAttribute("btnDownload", "<a href= &ldquo;descFin&ldquo; class=&ldquo;btn btn-warning btn-lg&ldquo;>DESCONTO FINANCEIRO</a>");
+						
+						System.out.println("sadhflsdlgsfdjglçsdjfgçlkjsdflgjkçldsfjglkçdlhjçlkdfjfdhfg");
 				
 					return "planilhaDeSetores";
 				}
@@ -799,6 +870,33 @@ public class PortalController {
 	}
 	
 	
+
+	
+	@RequestMapping(value="/planilhaDeSetoresXlsx", method = RequestMethod.GET)
+	public void planilhaDeSetoresXlsx(HttpServletResponse response) throws IOException {
+//		response.setContentType("application/octet-stream");
+//		
+//		response.setHeader("Content-Disposition","attachement; filename=planilhaDeSetores.xlsx");
+//		
+//		List<PlanilhaDeSetores> planilhaDeSetores = new JdbcPlanilhaDeSetores().getPlanilhaDeSetores("GERAL");
+//	
+//		
+//		ReportPlanilhaDeSetoresXlsx reportExcel = new ReportPlanilhaDeSetoresXlsx(planilhaDeSetores);
+//		
+//		reportExcel.export(response);
+		
+		
+		String teste;
+		
+		teste = new TesteOracle().exec();
+		System.out.println("licença valida OK 1234");
+		
+		
+		
+	}
+	
+	
+	
 	@RequestMapping("/tradeIn")
 	public String tradeIn(Usuario usuario, HttpSession session, Model model, HttpServletRequest request) {
 		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
@@ -806,63 +904,146 @@ public class PortalController {
 			model.addAttribute("logado", sessaoUsuario);
 			
 			//VARIAVEIS
-			String cod_industria=null;
+			String cod_industria;
 			String cod_equipe=null;
 			String dataInicial = request.getParameter("dataInicial");
 			String dataFinal = request.getParameter("dataFinal");
-			String categorias=null;
-			String marcas=null;
+			String[] categorias=null;
+			String[] marcas=null;
 			String familia=null;
 			String[] segmentos = null;
+			
+			String segmentosTratados=null;
 			
 			//CAPTURA SUBMIT
 			cod_industria = request.getParameter("industria");
 			cod_equipe = request.getParameter("equipe");
+			segmentos = request.getParameterValues("segmento");
+			categorias = request.getParameterValues("categorias");
 			
+			segmentosTratados = new TrataVetorInSql().vetorTratado(segmentos);
 			
-			//TESTE
-			System.out.println("Data Inicial: "+dataInicial);
-			System.out.println("Data Final: "+dataFinal);
+			System.err.println(segmentosTratados);
+			
+			//INSTANCIAS DE ARRAYS	
+			List<Segmento> segmentosJdbc = new ArrayList<>();
+			List<Industria> industria = new ArrayList<>();
+			Equipe equipe = new Equipe();
+			List<Categoria> getJdbccategorias = new ArrayList<>();
+			List<Marca> getMarcas = new ArrayList<>();
+			segmentosJdbc = new JdbcTradeIn().getSegmentos();
+			industria = new JdbcTradeIn().getIndustria(null);
+			
+			//TESTE VALORES
+			System.err.println("__________FILA__________");
 			System.out.println("Industria: "+cod_industria);
+			System.out.println("Categoria: "+categorias);
+			System.out.println("Marcas: "+marcas);
+			System.out.println("Familia: "+familia);
+			System.out.println("Segmento: "+segmentos);
 			System.out.println("Equipe: "+cod_equipe);
-			System.out.println("Categorias: "+categorias);
+			System.out.println("Dt_Inicial: "+dataInicial);
+			System.out.println("Dt_Final: "+dataFinal);
 			
-			System.err.println();
+		
 			
 			
+			//TESTE VALORES
+		
 			//INICIO DO CONTROLE DE DECISÃO
 			
-			if(cod_industria==null) {
-				List<Industria> industria = new ArrayList<>();
-				industria = new JdbcTradeIn().getIndustria(null);
+			// INICIO SELEÇÃO DA INDUSTRIA
+			if(cod_industria==null) { 
+				
+				
+				model.addAttribute("segmentosJdbc", segmentosJdbc);
 				model.addAttribute("industria", industria);
+				
 				return "tradeIn/industria";
+				// FIM SELEÇÃO DA INDUSTRIA
+				
+				// INICIO SELEÇÃO DA CATEGORIA
 			}else if(categorias==null) {
-				//Industria industria = new Industria();
-				List<Industria> industria = new ArrayList<>();
 				industria = new JdbcTradeIn().getIndustria(cod_industria);
-				model.addAttribute("industria", industria);
-				Equipe equipe = new Equipe();
 				equipe = new JdbcHierarquia().equipeGerenciaAtiva(cod_equipe);
+								
+				
+				
+				
+				getJdbccategorias = new JdbcTradeIn().getCategoria(cod_industria, segmentosTratados);
+				
+				if(segmentos!=null) {
+					for(Segmento Sj : segmentosJdbc) {
+						for(String s : segmentos) {
+								if(Sj.getCod_segmento().equals(s)) {
+								Sj.setAtivo(true);
+								break;
+							}//fim if de comparação
+							
+						}//fim sub-for
+						
+					}//fim for
+					
+				}//fim verificação se vetor esta nulo
+				
+			
+				
+				model.addAttribute("industria", industria);
 				model.addAttribute("equipe", equipe);
 				model.addAttribute("logado", sessaoUsuario);
 				model.addAttribute("dataInicial", dataInicial);
 				model.addAttribute("dataFinal", dataFinal);
-								
-				segmentos = request.getParameterValues("segmento");
+				model.addAttribute("segmentos", segmentos);
+				model.addAttribute("segmentosJdbc", segmentosJdbc);
+				model.addAttribute("getJdbccategorias", getJdbccategorias);
 				
-				if(segmentos==null) {
-					System.out.println("0");
-				} else {
-				System.out.println(segmentos.length);
+				return "tradeIn/categoria";
 				
-				}
-				for(String seg : segmentos) {
-					System.out.println(seg);
+				// FIM SELEÇÃO DA CATEGORIA
+				
+				// INICIO SELEÇÃO DA MARCA
+			}else if(marcas==null) {
+				
+				model.addAttribute("industria", industria);
+				model.addAttribute("equipe", equipe);
+				model.addAttribute("logado", sessaoUsuario);
+				model.addAttribute("dataInicial", dataInicial);
+				model.addAttribute("dataFinal", dataFinal);
+				model.addAttribute("segmentos", segmentos);
+				model.addAttribute("segmentosJdbc", segmentosJdbc);
+				model.addAttribute("getJdbccategorias", getJdbccategorias);
+				
+				if(segmentos!=null) {
+					for(Segmento Sj : segmentosJdbc) {
+						for(String s : segmentos) {
+								if(Sj.getCod_segmento().equals(s)) {
+								Sj.setAtivo(true);
+								break;
+							}//fim if de comparação
+							
+						}//fim sub-for
+						
+					}//fim for
+					
+				}//fim verificação se vetor esta nulo
+				
+				if (categorias!=null) {
+					String categoriasTratadas = new TrataVetorInSql().vetorTratado(categorias);
+					
+					System.out.println("inIndustria "+cod_industria);
+					System.out.println("inSegmento "+segmentosTratados);
+					System.out.println("inCategoria "+categoriasTratadas);
+					
+					
+					getMarcas = new JdbcTradeIn().getMarcas(cod_industria, segmentosTratados, categoriasTratadas);
 					
 				}
 				
-				return "tradeIn/categoria";
+				
+				
+				
+				
+				return "tradeIn/marca";
 			}
 				
 		}//fim verifica sessao
@@ -871,5 +1052,737 @@ public class PortalController {
 		return "index";
 	
 	}
-}
+	
+	
+	@RequestMapping("/clienteXindustria")
+	public String clienteXindustria(Usuario usuario, HttpSession session, Model model, HttpServletRequest request) {
+		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
+		if(sessaoUsuario != null) {
+			if(sessaoUsuario.getPerfil().equals("ADMINISTRADOR")||sessaoUsuario.getPerfil().equals("COMERCIAL")||sessaoUsuario.getPerfil().equals("DIRETORIA")||sessaoUsuario.getPerfil().equals("GERENTE")) {
+				model.addAttribute("logado", sessaoUsuario);
+				
+				System.out.println(request.getParameter("mesSelecionado"));
+				System.out.println(request.getParameter("anoSelecionado"));
+				
+				if(request.getParameter("mesSelecionado")==null||request.getParameter("anoSelecionado")==null) {
+					System.out.println("aguardando o disparador de eventos");
+					
+					return "clienteXindustria";
+					
+				} else {
+						
+						int mesConvertido = Integer.parseInt(request.getParameter("mesSelecionado")); 
+
+						
+						String periodo = new BetPeriodo().getPeriodo(mesConvertido, request.getParameter("anoSelecionado"));
+						System.out.println(periodo);
+						List<ColunasMesesBody> clienteXindustrias = new ArrayList<>();
+						clienteXindustrias = new JdbcClienteXIndustria().getClientexIndustria(periodo, sessaoUsuario.getPerfil(), sessaoUsuario.getCd_target());
+						model.addAttribute("clienteXindustrias", clienteXindustrias);
+						
+						
+					return "clienteXindustria";
+				}
+				
+				
+			
+			}
+			
+			return "homePage";
+			
+				
+			
+		}
+		
+		return "index";
+	}
+	
+	
+	@RequestMapping("/formacaoCarga")
+	public String formacaoCarga(Usuario usuario, HttpSession session, Model model, HttpServletRequest request) {
+		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
+		if(sessaoUsuario != null) {
+			if(sessaoUsuario.getPerfil().equals("ADMINISTRADOR")||sessaoUsuario.getPerfil().equals("COMERCIAL")||sessaoUsuario.getPerfil().equals("DIRETORIA")||sessaoUsuario.getPerfil().equals("TRANSPORTE")) {
+				model.addAttribute("logado", sessaoUsuario);
+				
+				List<CodDescricao> statusEntrega = new ArrayList<>();
+				statusEntrega = new JdbcPedidoProducao().getStatusEntrega();
+				model.addAttribute("statusEntrega", statusEntrega);	
+				
+				
+				String dataInicial = request.getParameter("dataInicial");
+				String dataFinal = request.getParameter("dataFinal");
+				
+					if(request.getParameter("dataInicial")==null||request.getParameter("dataFinal")==null) {
+						System.out.println("aguardando o disparador de eventos Formação Carga");
+					
+						return "formacaoCarga";
+					
+				} else {
+					List <PedidoProducao> pedidoProducao = new ArrayList<>();
+					pedidoProducao = new JdbcPedidoProducao().getpedidoProducao(dataInicial, dataFinal,"");
+					model.addAttribute("pedidoProducao", pedidoProducao);						
+						
+						
+					return "formacaoCarga";
+				}
+								
+			}
+			
+			return "homePage";
+						
+		}
+		
+		return "index";
+	}
+	
+	
+	@RequestMapping("/objetivo")
+	public String objetivo(Usuario usuario, HttpSession session, Model model, HttpServletRequest request, ObjetivoVendedor urlEditaVend ) {
+		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
+		if(sessaoUsuario != null) {
+			model.addAttribute("logado", sessaoUsuario);
+			String datainicial = request.getParameter("dataInicial");
+			String dataFinal = request.getParameter("dataFinal");
+			List<ObjetivoVendedor> objetivoVendedor = new ArrayList<>();
+			
+			
+			if(sessaoUsuario.getPerfil().equals("ADMINISTRADOR")||sessaoUsuario.getPerfil().equals("COMERCIAL")||sessaoUsuario.getPerfil().equals("DIRETORIA")) {
+					
+								
+			
+						if(request.getParameter("projecaoValor")!=null) {
+							
+							JdbcObjetivoVendedor j = new JdbcObjetivoVendedor();
+							j.atualizaObjetivo(urlEditaVend.getCd_venda(), request.getParameter("projecaoValor"));
+							
+							objetivoVendedor = new JdbcObjetivoVendedor().getObjetivoVendedor(sessaoUsuario, datainicial, dataFinal);
+							
+							
+							model.addAttribute("dataInicial", request.getParameter("dataInicial"));
+							model.addAttribute("dataFinal", request.getParameter("dataFinal"));
+							
+							return "redirect:objetivo";
+							
+						}
+						
+						System.out.println(urlEditaVend.getCd_venda());
+						System.out.println(request.getParameter("projecaoValor"));
+						
+					
+						if(request.getParameter("dataInicial")==null||request.getParameter("dataFinal")==null) {
+							System.out.println("1");
+							
+						}else {
+							System.out.println("2");
+							
+														
+							objetivoVendedor = new JdbcObjetivoVendedor().getObjetivoVendedor(sessaoUsuario, datainicial, dataFinal);
+							
+							
+							model.addAttribute("dataInicial", request.getParameter("dataInicial"));
+							model.addAttribute("dataFinal", request.getParameter("dataFinal"));
+							
+						}
+						System.out.println("3");
+									
+				
+													
+						model.addAttribute("objetivoVendedor", objetivoVendedor);
+				
+						return "objetivo";
+				
+					}else if(sessaoUsuario.getPerfil().equals("GERENTE")||sessaoUsuario.getPerfil().equals("SUPERVISOR")) {
+						if(request.getParameter("dataInicial")==null||request.getParameter("dataFinal")==null) {
+							System.out.println("1");
+							
+						}else {
+						
+						System.out.println(urlEditaVend.getCd_venda());
+						System.out.println(request.getParameter("projecaoValor"));
+															
+				
+						objetivoVendedor = new JdbcObjetivoVendedor().getObjetivoVendedor(sessaoUsuario, datainicial, dataFinal);
+						}
+						model.addAttribute("logado", sessaoUsuario);							
+						model.addAttribute("objetivoVendedor", objetivoVendedor);
+				
+						return "objetivoView";
+					
+					
+				}
+			
+			return "homePage";
+			
+							
+		}
+		
+		return "index";
+	}
+	
+	
+	@RequestMapping("/objetivoView")
+	public String objetivoView(Usuario usuario, HttpSession session, Model model, HttpServletRequest request, ObjetivoVendedor urlEditaVend ) {
+		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
+		if(sessaoUsuario != null) {
+			String datainicial = request.getParameter("dataInicial");
+			String dataFinal = request.getParameter("dataFinal");
+			List<ObjetivoVendedor> objetivoVendedor = new ArrayList<>();
+			
+					model.addAttribute("logado", sessaoUsuario);
+					
+					if(request.getParameter("dataInicial")==null||request.getParameter("dataFinal")==null) {
+						System.out.println("1");
+						
+					}else {
+						objetivoVendedor = new JdbcObjetivoVendedor().getObjetivoVendedor(sessaoUsuario, datainicial, dataFinal);
+						
+						model.addAttribute("dataInicial", request.getParameter("dataInicial"));
+						model.addAttribute("dataFinal", request.getParameter("dataFinal"));
+						
+					}
+					
+				
+												
+					model.addAttribute("objetivoVendedor", objetivoVendedor);
+			
+					return "objetivoView";
+					
+					
+				}
+										
+		
+		
+		return "index";
+	}
+	
+	@RequestMapping("/acompanhamentoPedidos")
+	public String acompanhamentoPedidos(Usuario usuario, HttpSession session, Model model, HttpServletRequest request) {
+		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
+		if(sessaoUsuario != null) {
+			String datainicial = request.getParameter("dataInicial");
+			String dataFinal = request.getParameter("dataFinal");
+			List<AcompanhamentoPedidos> acompanhamentoPedidos = new ArrayList<>();
+			
+					model.addAttribute("logado", sessaoUsuario);
+					
+					if(request.getParameter("dataInicial")==null||request.getParameter("dataFinal")==null) {
+						System.out.println("1");
+						System.out.println(request.getParameter("operacao"));
+						
+					}else {
+//						
+																		
+						model.addAttribute("dataInicial", request.getParameter("dataInicial"));
+						model.addAttribute("dataFinal", request.getParameter("dataFinal"));
+						
+					}
+					
+				
+												
+//					model.addAttribute("objetivoVendedor", objetivoVendedor);
+			
+					return "objetivoView";
+					
+					
+				}
+										
+		
+		
+		return "index";
+	}
+
+	
+	
+	@RequestMapping("/expedicaoCarregamento")
+	public String expedicaoCarregamento(Usuario usuario, HttpSession session, Model model, HttpServletRequest request) {
+		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
+		model.addAttribute("logado", sessaoUsuario);
+		
+		String cargaAtual=request.getParameter("nu_romaneio");
+		double vlTotalCarga=0;
+		String mensagem;
+		String operacao=request.getParameter("operacao");
+		String mensagem3;
+		String mensagem4="Verifique se a mesma ja esta expedida no Target ERP";
+		
+		
+		
+			
+		
+		if(sessaoUsuario != null) {
+			
+			if(sessaoUsuario.getPerfil().equals("ADMINISTRADOR")||sessaoUsuario.getPerfil().equals("TRANSPORTE")||sessaoUsuario.getPerfil().equals("DIRETORIA")||sessaoUsuario.getPerfil().equals("COMERCIAL")) {
+				
+				model.addAttribute("cargaAtual", cargaAtual);
+				
+		
+				
+				List<ExpedicaoCarregamento> expedicaoCarregamento = new ArrayList<>();
+				expedicaoCarregamento = new JdbcExpedicaoCarregamento().getExpedicaoCarregamento(request.getParameter("nu_romaneio"));
+				
+				if(request.getParameter("operacao")==null) {
+					 return "expedicao/expedicaoCarregamento";
+				}else {
+					if(request.getParameter("operacao").equals("Buscar")) {
+						if(expedicaoCarregamento.size()<=0){
+							System.err.println("TAMANHO DA LISTA "+expedicaoCarregamento.size());
+							mensagem3 = "Não foi localizada a carga "+request.getParameter("nu_romaneio")+":";
+							model.addAttribute("mensagem3", mensagem3);
+							model.addAttribute("mensagem4", mensagem4);
+						}
+					
+						
+					}
+					
+					
+					
+				}
+				
+				
+				
+				if(operacao!=null) {
+					if(operacao.equals("Efetiva")) {
+						//CONFIRMARNDO A SAIDA DA CARGA												
+						System.out.println("****CONFIRMANDO A SAÍDA DA CARGA**** " + request.getParameter("carga")+" = " + request.getParameter("saidaCarga"));
+						
+						expedicaoCarregamento = new JdbcExpedicaoCarregamento().getExpedicaoCarregamento(request.getParameter("carga"));
+						new JdbcExpedicaoCarregamento().setCarregamento(sessaoUsuario.getNome(), expedicaoCarregamento, request.getParameter("saidaCarga"),request.getParameter("carga"));
+						
+						expedicaoCarregamento = new JdbcExpedicaoCarregamento().consultaRomaneio(request.getParameter("carga"));
+						
+						
+						String mensagem2="STATUS DA MONTAGEM DA CARGA "+request.getParameter("carga");
+						model.addAttribute("mensagem2", mensagem2);
+						
+						
+						model.addAttribute("expedicaoCarregamento", expedicaoCarregamento);
+						return "expedicao/cargaLiberada";
+						
+						
+					}
+				}	
+				
+				for (ExpedicaoCarregamento e :expedicaoCarregamento ) {
+					vlTotalCarga += e.getVl_nota();
+				}
+				
+				if(vlTotalCarga>0) {
+					mensagem = "Confirmação de Saída da carga " + cargaAtual+" valor de " + Formata.moeda(vlTotalCarga);
+					model.addAttribute("mensagem", mensagem);
+					model.addAttribute("expedicaoCarregamento", expedicaoCarregamento);
+				}
+				
+				return "expedicao/expedicaoCarregamento";
+					
+				}//FIM VERIFICA PERFIL
+										
+			}//FIM VERIFICA SESSAO
+		
+		return "index";
+	}
+	
+	
+	@RequestMapping("/confirmacaoEntrega")
+	public String confirmacaoEntrega(Usuario usuario, HttpSession session, Model model, HttpServletRequest request) {
+		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
+		model.addAttribute("logado", sessaoUsuario);
+		String operacao=request.getParameter("operacao");
+		model.addAttribute("cargaAtual", request.getParameter("nu_romaneio"));
+		String vetorTratadoInSql=null;
+		
+		
+		
+		if(sessaoUsuario != null) {
+			
+		
+			if(sessaoUsuario.getPerfil().equals("ADMINISTRADOR")||sessaoUsuario.getPerfil().equals("TRANSPORTE")||sessaoUsuario.getPerfil().equals("DIRETORIA")||sessaoUsuario.getPerfil().equals("COMERCIAL")) {
+				List<ExpedicaoCarregamento> expedicaoCarregamento = new ArrayList<>();
+				expedicaoCarregamento = new JdbcExpedicaoCarregamento().consultaRomaneio(request.getParameter("nu_romaneio"));
+				model.addAttribute("expedicaoCarregamento", expedicaoCarregamento);
+				
+				for (ExpedicaoCarregamento e: expedicaoCarregamento) {
+					System.out.println(e.getNota());
+					
+				}
+							
+				
+				
+				if(operacao!=null) {
+					if(operacao.equals("Confirma Entrega")) {
+						String [] conf = request.getParameterValues("conf");
+						if(conf!=null) {
+							vetorTratadoInSql = new TrataVetorInSql().vetorTratado(conf);
+							System.out.println(vetorTratadoInSql);
+							model.addAttribute("expedicaoCarregamento", expedicaoCarregamento);
+							expedicaoCarregamento = new JdbcExpedicaoCarregamento().confirmaEntrega(request.getParameter("dataEntrega"), sessaoUsuario.getNome(), vetorTratadoInSql);
+							model.addAttribute("expedicaoCarregamento", expedicaoCarregamento);
+							return "expedicao/confirmacaoEntregaOK";
+						}
+					}//FIM TIPO DE OPERACAO
+				
+				}//FIM OPERACAO NULL
+				
+				return "expedicao/confirmacaoEntrega";
+				
+			}//FIM PERFIL
+		
+		}//FIM SESSAO
+		
+		return "index";
+		
+	}//FIM METODO
+	
+	
+	
+	@RequestMapping("/expedicaoRelatorio")
+	public String expedicaoRelatorio(Usuario usuario, HttpSession session, Model model, HttpServletRequest request) {
+		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
+		model.addAttribute("logado", sessaoUsuario);
+		String operacao=request.getParameter("operacao");
+		model.addAttribute("dataInicial", request.getParameter("dataInicial"));
+		model.addAttribute("dataFinal", request.getParameter("dataFinal"));
+		String codOrdenacao=null;
+		String descOrdenacao=null;
+		String checkPendente="";
+		String checkConcluido="";
+		
+		
+		
+		codOrdenacao = request.getParameter("ordenacao");
+		
+		
+		if(codOrdenacao==null) {
+			codOrdenacao="1";
+			descOrdenacao="PEDIDO";
+		}else if(codOrdenacao.equals("1")){
+			descOrdenacao="PEDIDO";
+		}else if(codOrdenacao.equals("26")){
+			descOrdenacao="DISTRITO";
+		}else if(codOrdenacao.equals("27")){
+			descOrdenacao="BAIRRO";
+		}else if(codOrdenacao.equals("25")){
+			descOrdenacao="CEP";
+		}
+		
+		
+		
+		String[] statusPendente = request.getParameterValues("statusPendente");
+		String[] statusConcluido = request.getParameterValues("statusConcluido");
+					
+		
+		if(sessaoUsuario != null) {
+						
+			if(sessaoUsuario.getPerfil().equals("ADMINISTRADOR")||sessaoUsuario.getPerfil().equals("TRANSPORTE")||sessaoUsuario.getPerfil().equals("DIRETORIA")||sessaoUsuario.getPerfil().equals("COMERCIAL")) {
+				System.out.println(operacao);
+				
+				if(operacao==null) {
+					
+					
+					
+					model.addAttribute("codOrdenacao", codOrdenacao);
+					model.addAttribute("descOrdenacao", descOrdenacao);
+					model.addAttribute("checkPendente", "checked");
+					model.addAttribute("checkConcluido", "checked");
+					
+					return "expedicao/relatorio";
+				}else {
+					String pendente="";
+					String concluido="";
+					
+					
+					if(statusPendente!=null) {
+						pendente="pendente";
+						model.addAttribute("checkPendente", "checked");
+					}
+					
+					if(statusConcluido!=null) {
+						concluido="OK";
+						model.addAttribute("checkConcluido", "checked");
+					}
+					
+					
+					model.addAttribute("codOrdenacao", codOrdenacao);
+					model.addAttribute("descOrdenacao", descOrdenacao);
+					System.out.println(operacao);
+					List<ExpedicaoCarregamento> expedicaoCarregamento = new ArrayList<>();
+					expedicaoCarregamento = new JdbcExpedicaoCarregamento().relatorio(request.getParameter("dataInicial"), request.getParameter("dataFinal"), operacao, codOrdenacao, pendente, concluido);
+					model.addAttribute("expedicaoCarregamento", expedicaoCarregamento);
+					return "expedicao/relatorio";
+					
+				}
+				
+				
+
+				
+			}//FIM PERFIL
+		
+		}//FIM SESSAO
+		
+		return "index";
+		
+		
+	}
+	
+	
+	
+	@RequestMapping("/analiseRede")
+	public String analiseRede(Usuario usuario, HttpSession session, Model model, HttpServletRequest request) {
+		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
+		model.addAttribute("logado", sessaoUsuario);
+		String operacao=request.getParameter("operacao");
+		model.addAttribute("dataInicial", request.getParameter("dataInicial"));
+		model.addAttribute("dataFinal", request.getParameter("dataFinal"));
+			
+		
+		if(sessaoUsuario != null) {
+						
+			if(sessaoUsuario.getPerfil().equals("ADMINISTRADOR")||sessaoUsuario.getPerfil().equals("DIRETORIA")||sessaoUsuario.getPerfil().equals("COMERCIAL")) {
+							
+				
+				if(operacao!=null) {
+					if(operacao.equals("Analise por Indústria")) {
+						
+						System.out.println(operacao);
+						
+						List<ColunasMesesBody> redeVendedorFaturamento = new ArrayList<>();
+						redeVendedorFaturamento = new JdbcRedeVendedorIndustria().getRedeVendedorFaturamento(request.getParameter("dataInicial"), request.getParameter("dataFinal"));
+						
+						model.addAttribute("redeVendedorFaturamento", redeVendedorFaturamento);
+						return "analiseRede";
+					}
+					
+				
+				}//FIM OPERACAO NULL
+				
+				return "analiseRede";
+				
+			}//FIM PERFIL
+		
+		}//FIM SESSAO
+		
+		return "index";
+				
+	}
+	
+	
+	@RequestMapping("/editaObservacaoExpedicao")
+	public String editaObservacaoExpedicao(Usuario usuario, HttpSession session, Model model, HttpServletRequest request, ExpedicaoCarregamento expedicao) {
+		System.out.println(expedicao.getNu_ped());
+		
+		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
+		model.addAttribute("logado", sessaoUsuario);
+		String texto="";
+		String pedido = Integer.toString(expedicao.getNu_ped()); 
+		
+		if(sessaoUsuario != null) {
+			model.addAttribute("pedido", expedicao.getNu_ped());
+			System.out.println(request.getParameter("texto"));
+			System.out.println(request.getParameter("operacao"));
+			
+			texto = new JdbcExpedicaoCarregamento().setObervacao(request.getParameter("texto"), pedido, request.getParameter("operacao"));
+			System.out.println(texto);
+			
+			
+			model.addAttribute("texto", texto);
+			
+			
+			
+			return "expedicao/observacao";
+		}
+		
+		
+		
+		
+		return "index";
+	}
+	
+	
+	@RequestMapping("/tracking")
+	public String tracking(Usuario usuario, HttpSession session, Model model, HttpServletRequest request) {
+		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
+		model.addAttribute("logado", sessaoUsuario);
+		
+		if(sessaoUsuario != null) {
+			
+			if(sessaoUsuario.getPerfil().equals("ADMINISTRADOR")||sessaoUsuario.getPerfil().equals("DIRETORIA")||sessaoUsuario.getPerfil().equals("COMERCIAL")||sessaoUsuario.getPerfil().equals("TRANSPORTE")) {
+			
+				
+				
+				Tracking pendEle = new Tracking();
+				Tracking administracao = new Tracking();
+				Tracking credito = new Tracking();
+				Tracking roteirizacao = new Tracking();
+				Tracking reserva = new Tracking();
+				Tracking separacao = new Tracking();
+				Tracking faturamento = new Tracking();
+				Tracking expedicao = new Tracking();
+				String mensagemExpedicao1="";
+				
+				
+				
+				
+				if(request.getParameter("operacao")!=null) {
+					if(request.getParameter("operacao").equals("op_expedicao")){
+						expedicao = new JdbcTracking().trkExpedicao();
+						
+						if(expedicao.getQtdPedido()>0) {
+							mensagemExpedicao1 = "PENDENTES: "+ expedicao.getQtdPedido()+" Pedidos - "+expedicao.getValorMoeda();
+							List<TrackingExpedicao> detalheExpedicao = new ArrayList<>();
+							detalheExpedicao = new JdbcTracking().detalheExpedicao();
+							
+							List<TrackingExpedicao> pedidosAgendados = new ArrayList<>();
+							pedidosAgendados = new JdbcTracking().agendamento("", "", "", "", "consultaAgendamentos");
+							
+														
+							for(TrackingExpedicao d:detalheExpedicao) {
+								for(TrackingExpedicao a:pedidosAgendados) {
+									if(d.getNuPed().equals(a.getNuPed())) {
+										a.setAg_dt_Agedamento("  pedido agendado para: " +Formata.data(a.getAg_dt_Agedamento()));
+										a.setAg_dt_Agedamento(d.getDtCadastro());
+										a.setCliente(d.getCliente());
+										a.setValorMoeda(d.getValorMoeda());
+										a.setNotaFiscal(d.getNotaFiscal());
+										a.setCarga(d.getCarga());
+										break;
+									}
+									
+								}
+								
+							}
+							
+							
+							model.addAttribute("detalheExpedicao", detalheExpedicao);
+							model.addAttribute("mensagemExpedicao1", mensagemExpedicao1);
+							model.addAttribute("pedidosAgendados", pedidosAgendados);
+						}
+					
+						return "tracking/expedicao";
+						
+					}
+				}
+				
+				pendEle = new JdbcTracking().trkPendenciaEletronica();
+				administracao = new JdbcTracking().trkAdministracao();
+				credito = new JdbcTracking().trkCredito();
+				roteirizacao = new JdbcTracking().trkRoteirizacao();
+				reserva = new JdbcTracking().trkReserva();
+				separacao = new JdbcTracking().trkSeparacao();
+				faturamento = new JdbcTracking().trkFaturamento();
+				expedicao = new JdbcTracking().trkExpedicao();
+				
+		
+				
+			
+				model.addAttribute("administracao", administracao);
+				model.addAttribute("credito", credito);
+				model.addAttribute("roteirizacao", roteirizacao);
+				model.addAttribute("reserva", reserva);
+				model.addAttribute("separacao", separacao);
+				model.addAttribute("faturamento", faturamento);
+				model.addAttribute("expedicao", expedicao);
+				model.addAttribute("pendEle", pendEle);
+			
+						
+				return "tracking";
+			}
+			return "home";
+		}
+	
+		return "index";
+	}
+	
+	
+	@RequestMapping("/agendaEntrega")
+	public String agendaEntrega(Usuario usuario, HttpSession session, Model model, HttpServletRequest request, TrackingExpedicao agendaEntrega ) {
+		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
+		model.addAttribute("logado", sessaoUsuario);
+		
+		
+		String pedido = agendaEntrega.getNuPed();
+		String texto=request.getParameter("texto");
+		String data = request.getParameter("data");
+		
+		TrackingExpedicao registro = new TrackingExpedicao();
+		List<TrackingExpedicao> agendamento = new ArrayList<>();
+		
+		
+		
+		if(request.getParameter("operacao")!=null) {
+			if(request.getParameter("operacao").equals("gravar")) {
+				
+				pedido = request.getParameter("pedido");
+				agendamento = new JdbcTracking().agendamento(request.getParameter("pedido"), request.getParameter("data"), sessaoUsuario.getNome(),request.getParameter("texto"),"insereRegistro");
+				for(TrackingExpedicao a:agendamento) {
+					texto=a.getAg_texto();
+				}
+				
+			}
+			
+			return "redirect:tracking";
+			
+		}else {
+			System.out.println("EXECUTANDO O ELSE ");
+			agendamento = new JdbcTracking().agendamento(agendaEntrega.getNuPed(), request.getParameter("data"), sessaoUsuario.getNome(),request.getParameter("texto"),"detalhaAgendamento");
+			
+			if(!agendamento.isEmpty()) {
+				for(TrackingExpedicao a:agendamento) {
+					texto=a.getAg_texto();
+					data=a.getAg_dt_Agedamento();
+					break;
+				}
+				
+			}
+		}
+		
+		System.out.println("texto: "+ texto);
+		model.addAttribute("texto", texto);
+		model.addAttribute("data", data);		
+		model.addAttribute("pedido", pedido);
+		model.addAttribute("cliente", agendaEntrega.getCliente());
+		
+		
+		return "tracking/agendamento";
+	}
+	
+	@RequestMapping("/romaneio")
+	public String romaneio(Usuario usuario, HttpSession session, Model model, HttpServletRequest request, TrackingExpedicao agendaEntrega ) {
+		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
+		model.addAttribute("logado", sessaoUsuario);
+		
+		Romaneio romaneio = new Romaneio();
+		List<PedidosDiario> itemRomaneio = new ArrayList<>();
+		
+		romaneio = new JdbcTracking().romaneio(agendaEntrega.getCarga());
+		itemRomaneio = new JdbcTracking().ItemRomaneio(agendaEntrega.getCarga());
+		
+		System.out.println(romaneio.getVeiculo());
+		
+		
+		String pedido = agendaEntrega.getNuPed();
+		String texto=request.getParameter("texto");
+		String data = request.getParameter("data");
+		
+		
+		model.addAttribute("romaneio", romaneio);
+		model.addAttribute("itemRomaneio", itemRomaneio);
+		
+		return "tracking/romaneio";
+	}
+	
+	
+	@RequestMapping("/roteiros")
+	public String roteiros(Usuario usuario, HttpSession session, Model model, HttpServletRequest request, TrackingExpedicao agendaEntrega ) {
+		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
+		model.addAttribute("logado", sessaoUsuario);
+		
+
+		
+	
+		
+		
+		return "tracking/roteiros";
+	}
+	
+}//FIM CONTROLLER
 

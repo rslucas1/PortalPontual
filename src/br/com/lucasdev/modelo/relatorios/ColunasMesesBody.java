@@ -16,7 +16,52 @@ public class ColunasMesesBody extends ClienteDetalhado {
 	coluna09,
 	coluna10,
 	coluna11, 
-	coluna12;
+	coluna12,
+	coluna13,
+	coluna14,
+	coluna15, vlTotal,vlAberto, vlFaturado;
+	
+
+
+	public String getVlTotal() {
+		return vlTotal;
+	}
+
+	public void setVlTotal(String vlTotal) {
+		this.vlTotal = vlTotal;
+	}
+
+	public String getVlAberto() {
+		return vlAberto;
+	}
+
+	public void setVlAberto(String vlAberto) {
+		this.vlAberto = vlAberto;
+	}
+
+	public String getVlFaturado() {
+		return vlFaturado;
+	}
+
+	public void setVlFaturado(String vlFaturado) {
+		this.vlFaturado = vlFaturado;
+	}
+
+	public String getColuna13() {
+		return coluna13;
+	}
+
+	public void setColuna13(String coluna13) {
+		this.coluna13 = coluna13;
+	}
+
+	public String getColuna14() {
+		return coluna14;
+	}
+
+	public void setColuna14(String coluna14) {
+		this.coluna14 = coluna14;
+	}
 
 	public String getColuna01() {
 		return coluna01;
@@ -96,6 +141,14 @@ public class ColunasMesesBody extends ClienteDetalhado {
 
 	public void setColuna10(String coluna10) {
 		this.coluna10 = coluna10;
+	}
+
+	public String getColuna15() {
+		return coluna15;
+	}
+
+	public void setColuna15(String coluna15) {
+		this.coluna15 = coluna15;
 	}
 
 	public String getColuna11() {

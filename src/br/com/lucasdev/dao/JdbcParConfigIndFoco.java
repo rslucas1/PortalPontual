@@ -40,7 +40,7 @@ public class JdbcParConfigIndFoco {
 					"on ve.cd_vend=v.cd_vend\r\n" + 
 					"\r\n" + 
 					"\r\n" + 
-					"where ve.cd_emp=13 and ve.utiliza_palm_top=1 and\r\n" + 
+					"where ve.cd_emp IN (13, 20) and ve.utiliza_palm_top=1 and\r\n" + 
 					" v.ativo=1 and e.ativo=1 and e.cd_equipe not in('PC98','PC85','PC90','1700','1')\r\n" + 
 					"\r\n" + 
 					"ORDER BY descricao DESC";
@@ -148,9 +148,7 @@ public class JdbcParConfigIndFoco {
 					}
 					
 					
-					
 				}
-				
 				
 				
 			}catch(SQLException e) {

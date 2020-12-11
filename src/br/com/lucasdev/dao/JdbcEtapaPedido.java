@@ -36,7 +36,7 @@ public class JdbcEtapaPedido {
 				"join ped_vda p on p.nu_ped = ev.nu_ped and ev.cd_clien = p.cd_clien and ev.cd_emp = p.cd_emp\r\n" + 
 				"join fila f on f.cd_fila = ev.cd_fila\r\n" + 
 				"where  ev.situacao = 'AB' \r\n" + 
-				"and ev.cd_emp = 13 \r\n" + 
+				"and ev.cd_emp IN (13, 20) \r\n" + 
 				"and p.tp_ped not in ('PE','NP')\r\n" + 
 				"and p.cd_vend = '"+cdVendTarget+"'\r\n" + 
 				"and ev.cd_fila IN (\r\n" + 

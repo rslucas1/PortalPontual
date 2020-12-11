@@ -2,7 +2,15 @@ package br.com.lucasdev.modelo.relatorios;
 
 public class PlanilhaDeSetores extends Vendedor{
 	
-	private String codigoSup, nomeSupervisor, dataInicio, nomeGerente, telefone, cpf, ativo;
+	private String codigoSup, nomeSupervisor, dataInicio, nomeGerente, telefone, cpf, ativo, qtdCliente;
+
+	public String getQtdCliente() {
+		return qtdCliente;
+	}
+
+	public void setQtdCliente(String qtdCliente) {
+		this.qtdCliente = qtdCliente;
+	}
 
 	public String getCodigoSup() {
 		return codigoSup;

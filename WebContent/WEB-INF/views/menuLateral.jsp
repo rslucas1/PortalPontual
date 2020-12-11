@@ -16,11 +16,11 @@
 		</a></li>
 		<ul class="ul-consultas">
 			<li class="li-pedidosAberto"><a class="linkMenu"
-				href="consEtapaPed">Pedidos em Aberto</a></li>
+				href="consEtapaPed">Etapa de Pedidos</a></li>
+<!-- 			<li class="li-positivacoes"><a class="linkMenu" -->
+<!-- 				href="consPositivacao">Positivações</a></li> -->
 			<li class="li-positivacoes"><a class="linkMenu"
-				href="consPositivacao">Positivações</a></li>
-			<li class="li-positivacoes"><a class="linkMenu"
-				href="consCliente">Cliente</a></li>	
+				href="consCliente">Consulta de Cliente</a></li>	
 		</ul>
 
 		<li class="li-principal"><a class="linkMenu bt2"
@@ -31,15 +31,23 @@
 			<li class="li-planoCobertura"><a class="linkMenu"
 				href="planCob">Plano de Cobertura</a></li>
 			<li class="li-planoCobertura"><a class="linkMenu"
-				href="pedDiario">Pedidos Diádio</a></li>
+				href="pedDiario">Pedidos Diário</a></li>
 			<li class="li-planoCobertura"><a class="linkMenu"
-				href="planilhaDeSetores">Planilha de Setores</a></li>	
-				
+				href="planilhaDeSetores">Planilha de Setores</a></li>
+			<li class="li-planoCobertura"><a class="linkMenu"
+				href="desempenhoDiario">Desempenho Diario</a></li>		
+			<li class="li-planoCobertura"><a class="linkMenu"
+				href="clienteXindustria">Cliente x Industria</a></li>
+			<li class="li-planoCobertura"><a class="linkMenu"
+				href="formacaoCarga">Expedicao</a></li>		
+			<li class="li-planoCobertura"><a class="linkMenu"
+				href="objetivo">Objetivo</a></li>	
 		</ul>
 
-		<li class="li-principal"><a class="linkMenu" href="dev">Download</a></li>
+<!-- 		<li class="li-principal"><a class="linkMenu" href="dev">Download</a></li> -->
 
-		<li class="li-principal"><a class="linkMenu" href="gerencial">Gerencial</a></li>
+		<li class="li-principal"><a class="linkMenu"
+			 href="tracking">Tracking</a></li>
 
 		<li class="li-principal"><a class="linkMenu bt3"
 			href="javascript://">Configurações

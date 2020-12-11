@@ -14,7 +14,7 @@
 	
 	<main>
 		<div class="Painel">
-		<div class=subPainel900>
+		<div class=subPainel1200>
 			<div class="col-sm-12">
 				<div class="row">
 					<H3 class="central-relatorio">
@@ -29,19 +29,27 @@
 						  <select class="form-control inline" id="exampleFormControlSelect1" name="filtro">
 						   	<option value="GERAL">GERAL</option>
 						    <option value="PC98">GERENCIA - RAFAEL ALVES</option>
-						    <option value="PC02">GERENCIA - VAGNER SOUZA</option>
+						    							
 							
-							
-							<option value="PC35">EQUIPE - MARCOS-LIT.SUL/V.RIB</option>
-							<option value="PC90">EQUIPE - SLAV- Z.LESTE(F)</option>
-							<option value="PC70">EQUIPE - RAFAEL - Z. LESTE</option>
-							<option value="PC40">EQUIPE - SOUZA - Z. OESTE</option>
-							<option value="PG45">EQUIPE - VIDAL - ZONA SUL</option>
-							<option value="1000">EQUIPE - EDSON-AL-GUA-ZN-ZL-V</option>
+							<option value="PC35">MARCOS-LIT.SUL/V.RIB</option>
+							<option value="PC40">VAGO - ZONA SUL</option>
+							<option value="PC70">RAFAEL - Z.LESTE</option>
+							<option value="PC90">EDSON - ZONA LESTE</option>
+							<option value="PG45">SUP VAGO -OESTE</option>
+							<option value="1200">MARCOS-ABC</option>
+							<option value="1000">EDSON - AL-GUA	</option>
+							<option value="1001">EDSON - ZN</option>
+							<option value="RM02">RAFAEL KA</option>
+					
+						
 						   </select>							
 						</div>
 						<div class="inline">
 							<input class="btn btn-primary" type="submit" value="PROCESSAR" />
+							
+							<a href="teste" class="btn btn-warning btn">&DownArrowBar;</a>
+							
+							
 						</div>
 					</form>
 				</div>
@@ -56,8 +64,9 @@
 						<th>COD</th>
 						<th>TARGET</th>
 						<th>NOME VENDEDOR</th>
-						<th>INICIO</th>
+						<th>CARTEIRA</th>
 						<th>GERENTE</th>
+						<th>INICIO</th>
 						<th>TELEFONE</th>
 						<th>CPF</th>
 						<th>ATIVO</th>
@@ -77,8 +86,9 @@
 							<td>${planilhaDeSetores.cd_guerra}</td>
 							<td>${planilhaDeSetores.cd_venda}</td>
 							<td>${planilhaDeSetores.nome}</td>
-							<td>${planilhaDeSetores.dataInicio}</td>
+							<td class="alinhatexto" style="color:red;">${planilhaDeSetores.qtdCliente}</td>
 							<td>${planilhaDeSetores.nomeGerente}</td>
+							<td>${planilhaDeSetores.dataInicio}</td>
 							<td>${planilhaDeSetores.telefone}</td>
 							<td>${planilhaDeSetores.cpf}</td>
 							<td>${planilhaDeSetores.ativo}</td>

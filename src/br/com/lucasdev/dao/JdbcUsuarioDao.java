@@ -69,7 +69,7 @@ public class JdbcUsuarioDao {
 	public int ativoErp(String vendedor) {
 		
 		String sql = "select ve.utiliza_palm_top ativoerp from vend_emp ve\r\n" + 
-				" where cd_emp=13 AND cd_vend='"+vendedor+"'";
+				" where cd_emp IN (13, 20) AND cd_vend='"+vendedor+"'";
 		
 		try {
 			connectionSqlServer = new ConnectionFactory().getConnectionSqlServer();

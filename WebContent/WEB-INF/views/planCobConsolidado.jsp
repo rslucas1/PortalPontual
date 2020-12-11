@@ -26,8 +26,9 @@
 						<div id="cxSelIndFoco" class="inline">
 						  <select class="form-control inline" id="exampleFormControlSelect1" name="industria">
 						    <option value="TODAS">TODAS INDÚSTRIAS</option>
-						    <option value="36511">ONTEX</option>
-							<option value="KC">KIMBERLY</option>
+						    <option value="FALCON">ONTEX</option>
+						    <option value="2">HYPERA S/A</option>
+							<option value="36511">KIMBERLY</option>
 							<option value="CARTA">CARTA FABRIL</option>
 							<option value="LM">BIC</option>
 							<option value="PH">PHISÁLIA</option>
@@ -35,6 +36,9 @@
 							<option value="1.10">PAM PAM</option>
 							<option value="1.12">SU BELLO</option>
 							<option value="12499">BARUEL</option>
+							<option value="EMB">EMBELLEZE</option>
+							<option value="1.04">ALTA MODA</option>
+							<option value="SKALA">SKALA</option>
 						   </select>							
 						</div>
 						<div class="inline">
@@ -52,6 +56,7 @@
 						<th>RAZÃO SOCIAL</th>
 						<th>FANTASIA</th>
 						<th>CNPJ/CPF</th>
+						<th>TELEFONE</th>
 						<th>GRUPO</th>
 						<th>SEGMENTO</th>
 						<th>AREA</th>
@@ -93,6 +98,7 @@
 							<td>${planoDeCoberturaVenCli.desc_cliente}</td>
 							<td>${planoDeCoberturaVenCli.fantasia}</td>
 							<td>${planoDeCoberturaVenCli.cgc_cpf}</td>
+							<td>${planoDeCoberturaVenCli.telefone}</td>
 							<td>${planoDeCoberturaVenCli.grupoCli}</td>
 							<td>${planoDeCoberturaVenCli.segmento}</td>
 							<td>${planoDeCoberturaVenCli.area}</td>

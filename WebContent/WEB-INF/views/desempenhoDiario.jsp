@@ -27,9 +27,9 @@
 							<option value=1>Janeiro</option>
 							<option value=2>Fevereiro</option>
 							<option value=3>Março</option>
-							<option value=4 selected>Abril</option>
+							<option value=4>Abril</option>
 							<option value=5>Maio</option>
-							<option value=6>Junho</option>
+							<option value=6 selected>Junho</option>
 							<option value=7>Julho</option>
 							<option value=8>Agosto</option>
 							<option value=9>Setembro</option>
@@ -58,6 +58,8 @@
 					<tr>
 						<th>Cod</th>
 						<th>Nome</th>
+						<th>ABERTO</th>
+						<th>FATURADO</th>
 
 					
 						<th>1</th>
@@ -75,7 +77,6 @@
 						<th>13</th>
 						<th>14</th>
 						<th>15</th>
-						<th>16</th>
 						<th>16</th>
 						<th>17</th>
 						<th>18</th>
@@ -96,48 +97,48 @@
 			
 					</tr>
 					<jsp:useBean id="dao"
-						class="br.com.lucasdev.modelo.relatorios.ColunasMesesBody" />
-					<c:forEach var="planoDeCoberturaVenCli"
-						items="${planoDeCoberturaVenCli}">
+						class="br.com.lucasdev.modelo.relatorios.DesempenhoDiario" />
+					<c:forEach var="desempenhoDiario"
+						items="${desempenhoDiario}">
 						<tr>
 
-							<td>${planoDeCoberturaVenCli.cd_cliente}</td>
-							<td>${planoDeCoberturaVenCli.desc_cliente}</td>
-							<td>${planoDeCoberturaVenCli.fantasia}</td>
-							<td>${planoDeCoberturaVenCli.cgc_cpf}</td>
-							<td>${planoDeCoberturaVenCli.grupoCli}</td>
-							<td>${planoDeCoberturaVenCli.segmento}</td>
-							<td>${planoDeCoberturaVenCli.area}</td>
-							<td>${planoDeCoberturaVenCli.cep}</td>
-							<td>${planoDeCoberturaVenCli.logradouro}</td>
-							<td>${planoDeCoberturaVenCli.numero}</td>
-							<td>${planoDeCoberturaVenCli.bairro}</td>
-							<td>${planoDeCoberturaVenCli.municipio}</td>
-							<td>${planoDeCoberturaVenCli.distrito}</td>
-							<td>${planoDeCoberturaVenCli.cdVendedor}</td>
-							<td>${planoDeCoberturaVenCli.vendedor}</td>
-							<td>${planoDeCoberturaVenCli.nomeGuerraVend}</td>
-							<td>${planoDeCoberturaVenCli.descGerencia}</td>
-							<td>${planoDeCoberturaVenCli.cdEquipe}</td>
-							<td>${planoDeCoberturaVenCli.descEquipe}</td>
+							<td>${desempenhoDiario.codigoVendedor}</td>
+							<td>${desempenhoDiario.nomeVendedor}</td>
+							<td>${desempenhoDiario.totalAberto}</td>
+							<td>${desempenhoDiario.valorTotal}</td>
 							
-							
-							
-							
-							
-							<td>${planoDeCoberturaVenCli.coluna01}</td>
-							<td>${planoDeCoberturaVenCli.coluna02}</td>
-							<td>${planoDeCoberturaVenCli.coluna03}</td>
-							<td>${planoDeCoberturaVenCli.coluna04}</td>
-							<td>${planoDeCoberturaVenCli.coluna05}</td>
-							<td>${planoDeCoberturaVenCli.coluna06}</td>
-							<td>${planoDeCoberturaVenCli.coluna07}</td>
-							<td>${planoDeCoberturaVenCli.coluna08}</td>
-							<td>${planoDeCoberturaVenCli.coluna09}</td>
-							<td>${planoDeCoberturaVenCli.coluna10}</td>
-							<td>${planoDeCoberturaVenCli.coluna11}</td>
-							<td class="ultimaColuna">${planoDeCoberturaVenCli.coluna12}</td>
-						</tr>
+							<td>${desempenhoDiario.dia_1}</td>
+							<td>${desempenhoDiario.dia_2}</td>
+							<td>${desempenhoDiario.dia_3}</td>
+							<td>${desempenhoDiario.dia_4}</td>
+							<td>${desempenhoDiario.dia_5}</td>
+							<td>${desempenhoDiario.dia_6}</td>
+							<td>${desempenhoDiario.dia_7}</td>
+							<td>${desempenhoDiario.dia_8}</td>
+							<td>${desempenhoDiario.dia_9}</td>
+							<td>${desempenhoDiario.dia_10}</td>
+							<td>${desempenhoDiario.dia_11}</td>
+							<td>${desempenhoDiario.dia_12}</td>
+							<td>${desempenhoDiario.dia_13}</td>
+							<td>${desempenhoDiario.dia_14}</td>
+							<td>${desempenhoDiario.dia_15}</td>
+							<td>${desempenhoDiario.dia_16}</td>
+							<td>${desempenhoDiario.dia_17}</td>
+							<td>${desempenhoDiario.dia_18}</td>
+							<td>${desempenhoDiario.dia_19}</td>
+							<td>${desempenhoDiario.dia_20}</td>
+							<td>${desempenhoDiario.dia_21}</td>
+							<td>${desempenhoDiario.dia_22}</td>
+							<td>${desempenhoDiario.dia_23}</td>
+							<td>${desempenhoDiario.dia_24}</td>
+							<td>${desempenhoDiario.dia_25}</td>
+							<td>${desempenhoDiario.dia_26}</td>
+							<td>${desempenhoDiario.dia_27}</td>
+							<td>${desempenhoDiario.dia_28}</td>
+							<td>${desempenhoDiario.dia_29}</td>
+							<td>${desempenhoDiario.dia_30}</td>
+							<td>${desempenhoDiario.dia_31}</td>
+											
 					</c:forEach>
 				</table>
 			</div>

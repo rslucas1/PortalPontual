@@ -30,26 +30,18 @@
 							    </select>
 						</fieldset>
 						
+						<fieldset>
 						<legend>Segmento</legend>
-								<div class="form-check">
-							    	<input type="checkbox" class="form-check-input" name="segmento" value="ADULTO">
-							    	<label class="form-check-label checkTradeIn">SEG ADULTO</label>
-							    	
-							    	<input type="checkbox" class="form-check-input" name="segmento" value="INFANTIL">
-							    	<label class="form-check-label checkTradeIn">SEG INFANTIL</label>
-							    	
-							    	<input type="checkbox" class="form-check-input" name="segmento" value="LIMPEZA">
-							    	<label class="form-check-label checkTradeIn">SEG LIMPEZA</label>
-							    	
-							    	<input type="checkbox" class="form-check-input" name="segmento" value="HIGIENE">
-							    	<label class="form-check-label checkTradeIn">SEG HIGIENE</label>	
-							    	
-							       	<input type="checkbox" class="form-check-input" name="segmento" value="PERFUMARIA">
-							    	<label class="form-check-label checkTradeIn">SEG PERFUMARIA</label>
-							    	
-							    	<input type="checkbox" class="form-check-input" name="segmento" value="ALIMENTOS">
-							    	<label class="form-check-label checkTradeIn" >SEG ALIMENTOS</label>								    	
-							  </div>
+							<table class="tradeInCategoria">
+								<jsp:useBean id="dao4" class="br.com.lucasdev.modelo.relatorios.Segmento" />
+								<c:forEach var="segmentosJdbc" items="${segmentosJdbc}">
+								<tr>
+									<td><input type="checkbox" class="form-check-input" name="segmento" value="${segmentosJdbc.cod_segmento}">
+							    		<label class="form-check-label">${segmentosJdbc.desc_segmento}</label>
+							    	</td>
+								</tr>
+								</c:forEach>
+							</table>
 						</fieldset>
 						
 						<fieldset class="dropdownTradeIndset">

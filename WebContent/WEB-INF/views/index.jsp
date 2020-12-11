@@ -1,5 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<c:url value="/resources/img/index-logo.png" var="imagens"/>
+<c:url value="/resources/img/logo-portal-natal.png" var="imagens"/>
 
 <!doctype html>
 <html lang="pt-br">
@@ -16,7 +16,7 @@
     <div class="index-geral">
       <div class="index-box-login">
         <div class="index-box-login-logo">
-          <img class="index-logo" src=<c:url value="/resources/img/index-logo.png"/> width="200"/>  
+          <img class="index-logo" src=<c:url value="/resources/img/logo-portal-natal.png"/> width="200"/>  
         </div>
 
         <div class="index-box-login-formulario">
