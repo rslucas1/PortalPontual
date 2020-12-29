@@ -67,42 +67,47 @@
 							
 						</tr>
 					</c:forEach>
+					
+					
 				</table>
 				
+				<h3>Pedidos Agendados</h3>
 				
-<!-- 				<table class="table table-bordered table-hover table-sm table-striped tabela-planCob-Vend"  style= "white-space: nowrap" > -->
-<!-- 					<tr> -->
-<!-- 						<th> DT ENTRADA </th> -->
-<!-- 						<th> PEDIDO </th> -->
-<!-- 						<th> CLIENTE </th> -->
-<!-- 						<th> VALOR </th> -->
-<!-- 						<th> NOTA  </th> -->
-<!-- 						<th> CARGA </th> -->
-<!-- 						<th> AGENDAMENTO</th> -->
+								<table class="table table-bordered table-hover table-sm table-striped tabela-planCob-Vend"  style= "white-space: nowrap" >
+					<tr>
+						<th> DT ENTRADA </th>
+						<th> PEDIDO </th>
+						<th> CLIENTE </th>
+						<th> VALOR </th>
+						<th> NOTA  </th>
+						<th> CARGA </th>
+						<th> AGENDAMENTO</th>
 								
 
 
-<!-- 					</tr> -->
-<%-- 					<jsp:useBean id="dao2" --%>
-<%-- 						class="br.com.lucasdev.modelo.relatorios.TrackingExpedicao" /> --%>
-<%-- 					<c:forEach var="pedidosAgendados" --%>
-<%-- 						items="${pedidosAgendados}"> --%>
-<!-- 						<tr> -->
+					</tr>
+					<jsp:useBean id="dao2"
+						class="br.com.lucasdev.modelo.relatorios.TrackingExpedicao" />
+					<c:forEach var="pedidosAgendados"
+						items="${pedidosAgendados}">
+						<tr>
 						
-<%-- 							<td class="alinhatexto"> ${pedidosAgendados.dtCadastro}</td> --%>
-<%-- 							<td class="alinhatexto">${pedidosAgendados.nuPed}</td> --%>
-<%-- 							<td>${pedidosAgendados.cliente}</td> --%>
-<%-- 							<td class="alinhatexto">${pedidosAgendados.valorMoeda}</td> --%>
-<%-- 							<td class="alinhatexto">${pedidosAgendados.notaFiscal}</td> --%>
-<%-- 							<td><a target="_blank" class="linkTabela" href="romaneio?carga=${pedidosAgendados.carga}">${pedidosAgendados.carga}</a></td> --%>
+							<td class="alinhatexto"> ${pedidosAgendados.dtCadastro}</td>
+							<td class="alinhatexto">${pedidosAgendados.nuPed}</td>
+							<td>${pedidosAgendados.cliente}</td>
+							<td class="alinhatexto">${pedidosAgendados.valorMoeda}</td>
+							<td class="alinhatexto">${pedidosAgendados.notaFiscal}</td>
+							<td><a target="_blank" class="linkTabela" href="romaneio?carga=${pedidosAgendados.carga}">${pedidosAgendados.carga}</a></td>
 							
-<%-- 							<td><a  target="_blank" class="linkTabela" href="agendaEntrega?nuPed=${pedidosAgendados.nuPed}&amp;cliente=${pedidosAgendados.cliente}">&#9997;</a>${pedidosAgendados.ag_dt_Agedamento}</td> --%>
+							<td><a  target="_blank" class="linkTabela" href="agendaEntrega?nuPed=${pedidosAgendados.nuPed}&amp;cliente=${pedidosAgendados.cliente}">&#9997;</a>${pedidosAgendados.ag_dt_Agedamento}</td>
 								
 						
 							
-<!-- 						</tr> -->
-<%-- 					</c:forEach> --%>
-<!-- 				</table> -->
+						</tr>
+					</c:forEach>
+				</table>
+								
+
 				
 			</div>
 			

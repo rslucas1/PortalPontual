@@ -39,7 +39,8 @@
 						<div class="inline">
 							<div>Agendamento</div>
 							<div>
-								<input class="form-control form-control-sm " type="date" name="data" value="${data}" size="12" required>
+								<input class="form-control form-control-sm inline" type="date" name="data" value="${data}" size="12" required>
+								<input style="margin-top:20px;" class="btn btn-warning btn-sm inline" type="submit" name="operacao" value="apagar" />
 							</div>
 						</div>
 													

@@ -1628,33 +1628,81 @@ public class PortalController {
 						
 						if(expedicao.getQtdPedido()>0) {
 							mensagemExpedicao1 = "PENDENTES: "+ expedicao.getQtdPedido()+" Pedidos - "+expedicao.getValorMoeda();
+							
+							List<TrackingExpedicao> filaExpedicao = new ArrayList<>();
+							filaExpedicao = new JdbcTracking().detalheExpedicao();
+							
+							
 							List<TrackingExpedicao> detalheExpedicao = new ArrayList<>();
-							detalheExpedicao = new JdbcTracking().detalheExpedicao();
+							
+							List<TrackingExpedicao> detalheAgendamento  = new ArrayList<>();
 							
 							List<TrackingExpedicao> pedidosAgendados = new ArrayList<>();
 							pedidosAgendados = new JdbcTracking().agendamento("", "", "", "", "consultaAgendamentos");
 							
-														
-							for(TrackingExpedicao d:detalheExpedicao) {
-								for(TrackingExpedicao a:pedidosAgendados) {
-									if(d.getNuPed().equals(a.getNuPed())) {
-										a.setAg_dt_Agedamento("  pedido agendado para: " +Formata.data(a.getAg_dt_Agedamento()));
-										a.setAg_dt_Agedamento(d.getDtCadastro());
-										a.setCliente(d.getCliente());
-										a.setValorMoeda(d.getValorMoeda());
-										a.setNotaFiscal(d.getNotaFiscal());
-										a.setCarga(d.getCarga());
-										break;
+																															
+													
+							if(pedidosAgendados.size()<=0) {
+								
+								model.addAttribute("detalheExpedicao", filaExpedicao);
+								
+								
+							}else {
+								for (TrackingExpedicao f:filaExpedicao) {
+																	
+									boolean agendado = false;
+									
+									for(TrackingExpedicao a:pedidosAgendados) {
+										
+																													
+										if(a.getNuPed().equals(f.getNuPed())) {
+											
+											TrackingExpedicao registro = new TrackingExpedicao();
+											
+											registro.setNuPed(f.getNuPed());
+											registro.setDtCadastro(f.getDtCadastro());
+											registro.setCliente(f.getCliente());
+											registro.setValorMoeda(f.getValorMoeda());
+											registro.setNotaFiscal(f.getNotaFiscal());
+											registro.setCarga(f.getCarga());
+											registro.setAg_dt_Agedamento(" **PEDIDO AGENDADO PARA: "+Formata.data(a.getAg_dt_Agedamento()));
+											
+											detalheAgendamento.add(registro);
+											
+											agendado = true;
+
+											break;
+										} 
+									
+													
+										
 									}
 									
+									 if(!agendado) {
+										
+										
+										TrackingExpedicao registro = new TrackingExpedicao();
+										registro.setDtCadastro(f.getDtCadastro());
+										registro.setNuPed(f.getNuPed());
+										registro.setCliente(f.getCliente());
+										registro.setValorMoeda(f.getValorMoeda());
+										registro.setNotaFiscal(f.getNotaFiscal());
+										registro.setCarga(f.getCarga());
+										
+										detalheExpedicao.add(registro);
+									
 								}
+									
+								}
+								model.addAttribute("detalheExpedicao", detalheExpedicao);
 								
 							}
+
 							
 							
-							model.addAttribute("detalheExpedicao", detalheExpedicao);
+							
 							model.addAttribute("mensagemExpedicao1", mensagemExpedicao1);
-							model.addAttribute("pedidosAgendados", pedidosAgendados);
+							model.addAttribute("pedidosAgendados", detalheAgendamento);
 						}
 					
 						return "tracking/expedicao";
@@ -1716,6 +1764,9 @@ public class PortalController {
 				for(TrackingExpedicao a:agendamento) {
 					texto=a.getAg_texto();
 				}
+				
+			}else if(request.getParameter("operacao").equals("apagar")) {
+				new JdbcTracking().agendamento(request.getParameter("pedido"), request.getParameter("data"), sessaoUsuario.getNome(), request.getParameter("texto"), request.getParameter("operacao"));
 				
 			}
 			

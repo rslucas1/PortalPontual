@@ -485,12 +485,55 @@ public class JdbcTracking {
 	public Tracking trkFaturamento() {
 		Tracking registro = new Tracking();
 		
-		String sqlTotal ="SELECT COUNT (NR_AUF), SUM(WERT_NACHN) FROM AUFTRAEGE WHERE  STAT IN (75) AND HINW_ZUST IS NULL AND ART_EING != 'MAN' AND NR_AUF NOT IN ('940587','495','496')";
+		String sqlTotal ="SELECT COUNT (NR_AUF), SUM(WERT_NACHN) FROM AUFTRAEGE WHERE  STAT IN (75) AND HINW_ZUST IS NULL AND ART_EING != 'MAN' AND NR_AUF NOT IN ('940587','495','716')";
 		
-		String sqlUltPed ="SELECT * FROM (SELECT DATUM_BESTELL FROM AUFTRAEGE WHERE  STAT IN (75)  AND HINW_ZUST IS NULL AND ART_EING != 'MAN' AND NR_AUF NOT IN ('940587','495','496') ORDER BY DATUM_BESTELL ASC ) WHERE ROWNUM=1";
+//		String sqlTotal ="select DISTINCT\r\n" + 
+//				"COUNT(p.nu_ped) AS 'QTD',\r\n" + 
+//				"sum(p.valor_tot) as 'VL TOTAL FAT'\r\n" + 
+//				"\r\n" + 
+//				"from ped_vda p\r\n" + 
+//				"\r\n" + 
+//				"left join nota n\r\n" + 
+//				"on p.nu_ped=n.nu_ped and p.cd_emp=n.cd_emp\r\n" + 
+//				"\r\n" + 
+//				"FULL OUTER JOIN      OPENQUERY(WMSPRD, 'SELECT NR_AUF,STAT,CNPJ_PROPRIETARIO_ERP, HINW_ZUST, ART_EING FROM AUFTRAEGE ' ) AS WMST \r\n" + 
+//				"                        ON WMST.NR_AUF = cast(P.nu_ped as varchar)\r\n" + 
+//				"\r\n" + 
+//				"where\r\n" + 
+//				"\r\n" + 
+//				"STAT IN (75) \r\n" + 
+//				"AND n.vl_tot_nf IS NULL\r\n" + 
+//				"AND WMST.HINW_ZUST IS NULL \r\n" + 
+//				"AND WMST.ART_EING != 'MAN' \r\n" + 
+//				"AND P.dt_cad> '2020-12-01'";
 		
+	
 		
+		String sqlUltPed ="SELECT * FROM (SELECT DATUM_BESTELL FROM AUFTRAEGE WHERE  STAT IN (75)  AND HINW_ZUST IS NULL AND ART_EING != 'MAN' AND NR_AUF NOT IN ('940587','495','716') ORDER BY DATUM_BESTELL ASC ) WHERE ROWNUM=1";
 		
+//		String sqlUltPed="select DISTINCT TOP 1\r\n" + 
+//				"CONVERT(VARCHAR(10), p.dt_cad, 103) AS 'ULTIMO PEDIDO',\r\n" + 
+//				"n.situacao\r\n" + 
+//				"\r\n" + 
+//				"from ped_vda p\r\n" + 
+//				"\r\n" + 
+//				"left join nota n\r\n" + 
+//				"on p.nu_ped=n.nu_ped and p.cd_emp=n.cd_emp\r\n" + 
+//				"\r\n" + 
+//				"FULL OUTER JOIN      OPENQUERY(WMSPRD, 'SELECT NR_AUF,STAT,CNPJ_PROPRIETARIO_ERP, HINW_ZUST, ART_EING FROM AUFTRAEGE ' ) AS WMST \r\n" + 
+//				"                        ON WMST.NR_AUF = cast(P.nu_ped as varchar)\r\n" + 
+//				"\r\n" + 
+//				"where\r\n" + 
+//				"\r\n" + 
+//				"STAT IN (75) \r\n" + 
+//				"AND n.vl_tot_nf IS NULL\r\n" + 
+//				"AND WMST.HINW_ZUST IS NULL \r\n" + 
+//				"AND WMST.ART_EING != 'MAN' \r\n" + 
+//				"AND P.dt_cad> '2020-12-01'\r\n" + 
+//				"\r\n" + 
+//				"order by 1 ASC";
+		
+
 		try {
 			PreparedStatement stmt1 = (PreparedStatement) connectionOracle.prepareStatement(sqlTotal);
 			ResultSet rs1 = stmt1.executeQuery();
@@ -502,10 +545,10 @@ public class JdbcTracking {
 				registro.setQtdPedido(rs1.getInt(1));
 				registro.setValor(rs1.getDouble(2));
 				registro.setValorMoeda(Formata.moeda(registro.getValor()));					
-				if(rs2.next()) {
-				registro.setUltPed(Formata.data(rs2.getString(1).substring(0, 10)));
+//				if(rs2.next()) {
+//				registro.setUltPed(Formata.data(rs2.getString(1).substring(0, 10)));
 				
-				}
+//				}
 			} else {
 				
 				registro.setQtdPedido(0);
@@ -675,13 +718,13 @@ public class JdbcTracking {
 	public List<TrackingExpedicao> agendamento(String nuPed, String dt_agendamento, String usuario, String texto, String operacao) {
 		
 		List<TrackingExpedicao> agendamentos = new ArrayList<>();
-		
+		LocalDate hoje = LocalDate.now(); 
 		
 		try {
 			
 			if(operacao.equals("consultaAgendamentos")) {
 				PreparedStatement stmt_verifica = (PreparedStatement) mySql.prepareStatement("SELECT nuPed, dt_agendamento from agendamentopedido");
-				System.out.println(stmt_verifica);
+				
 				ResultSet rs_1 = stmt_verifica.executeQuery();
 				while(rs_1.next()) {
 					TrackingExpedicao registro = new TrackingExpedicao();
@@ -696,25 +739,24 @@ public class JdbcTracking {
 			} else if(operacao.equals("insereRegistro")) {
 								
 				PreparedStatement stmt_verifica = (PreparedStatement) mySql.prepareStatement("SELECT * FROM agendamentopedido WHERE nuPed="+nuPed);
-				System.out.println(stmt_verifica);
-				ResultSet rs_1 = stmt_verifica.executeQuery();
 				
-//				if(rs_1.next()) {
-//					TrackingExpedicao registro = new TrackingExpedicao();
-//					registro.setAg_texto(rs_1.getString(3));
-//										
-//					agendamentos.add(registro);
-//					
-//				}
+				ResultSet rs_1 = stmt_verifica.executeQuery();
 						
-			
 				if(!rs_1.next()) {
 					
-					LocalDate hoje = LocalDate.now(); 
-					
+				
 					PreparedStatement stmt_insert = this.mySql.prepareStatement("insert into agendamentopedido (nuPed, dt_agendamento, dt_alteracao, usuario, observacao) VALUES ("+nuPed+",'"+dt_agendamento+"','"+hoje+"','"+usuario+"','"+texto+" <--- alterado por "+usuario+" em "+hoje+"*******')");
 					System.out.println(stmt_insert);
 					stmt_insert.execute();
+				}else {
+										
+					
+					PreparedStatement stmt_updateData = this.mySql.prepareStatement("UPDATE agendamentopedido SET dt_agendamento='"+dt_agendamento+"'  where nuPed="+nuPed);
+					PreparedStatement stmt_updateObservacao = this.mySql.prepareStatement("UPDATE agendamentopedido SET observacao='"+rs_1.getString(3)+" | "+texto+" <-- alterado por "+usuario+" em "+hoje+"**' where nuPed="+nuPed);
+															
+					stmt_updateData.execute();
+					stmt_updateObservacao.execute();
+					
 				}
 				
 			} else if (operacao.equals("detalhaAgendamento")) {
@@ -735,6 +777,31 @@ public class JdbcTracking {
 
 					
 				}
+				
+			}else if (operacao.equals("apagar")) {
+				
+				
+				String verifica="SELECT * FROM agendamentopedido WHERE nuPed="+nuPed;
+				System.out.println(verifica);
+				PreparedStatement stmt_verifica = (PreparedStatement) mySql.prepareStatement(verifica);
+				System.out.println("SUCCESS PreparedStatement");
+				ResultSet rs_1 = stmt_verifica.executeQuery();
+				System.out.println("SUCCESS EXECUTEQUERY");
+				
+				if(rs_1.next()) {
+				System.out.println("CONSEGUI LOCALIZAR O PEDIDO="+rs_1.getString(1));
+				System.out.println("SUCCESS EXIBIR COLUNA1");
+				}
+								
+				String insere="insert into agendamentodeletado (nuped, dt_agendamento, dt_delecao, observacao, usuario) values ("+rs_1.getString(1)+", '"+rs_1.getString(2)+"','"+hoje+"', '" +rs_1.getString(3)+"', '" + usuario+"')";
+				System.out.println(insere);
+				PreparedStatement stmt_insert = (PreparedStatement) mySql.prepareStatement(insere);
+				stmt_insert.execute();
+			
+				String deleta="delete from agendamentopedido where nuPed="+nuPed;
+				System.out.println(deleta);
+				PreparedStatement stmt_delete = (PreparedStatement) mySql.prepareStatement(deleta);
+				stmt_delete.execute();
 				
 			}
 			
@@ -859,6 +926,65 @@ public class JdbcTracking {
 	
 	return itemRomaneio;
 }
+	
+	
+//	public List<TrackingExpedicao> trkEntrega() {
+		
+		
+		
+		
+//		String pedStat95Wms ="";
+		
+		
+		
+//			String pedidosErp ="";
+			
+			
+//			try {
+//				PreparedStatement stmt1 = (PreparedStatement) connectionSqlServerErp.prepareStatement(pedStat95Wms);
+//				ResultSet rs1 = stmt1.executeQuery();
+//				
+//				PreparedStatement stmt2 = (PreparedStatement) connectionSqlServerErp.prepareStatement(pedStat95Wms);
+//				ResultSet rs2 = stmt2.executeQuery();
+//							
+//				
+//				if(rs1.next()) {
+//					registro.setQtdPedido(rs1.getInt(1));
+//					registro.setValor(rs1.getDouble(2));
+//					registro.setValorMoeda(Formata.moeda(registro.getValor()));					
+//					if(rs2.next()) {
+//					registro.setUltPed(rs2.getString(1));
+//					
+//					}
+//				} else {
+//					
+//					registro.setQtdPedido(0);
+//					registro.setValorMoeda("R$ 0,00");
+//					registro.setUltPed("-");
+//										
+//				}
+//				
+//				if(registro.getUltPed()==null) {
+//					registro.setUltPed("-");
+//					
+//				}
+//				
+//				if(registro.getValorMoeda()==null) {
+//					registro.setUltPed("R$ 0,00");
+//					
+//				}
+//				
+//		
+//								
+//			}catch(SQLException e) {
+//					throw new RuntimeException(e);
+//			}
+//			
+			
+		
+		
+//		return registro;
+//	}
  	
 	
 }
