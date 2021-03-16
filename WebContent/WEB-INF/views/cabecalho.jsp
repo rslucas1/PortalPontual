@@ -12,7 +12,7 @@
     
     
       <div class="logoCabecalho inline">
-     	 <img class="img_logo_cabecalho" src=<c:url value="/resources/img/logo-portal-natal.png"/> />
+     	 <img class="img_logo_cabecalho" src=<c:url value="/resources/img/logo-ascendente.png"/> />
       </div>
       
      <div class="descUsuario inline">

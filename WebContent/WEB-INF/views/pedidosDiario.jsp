@@ -17,9 +17,21 @@
 				<div style="margin-bottom:20px;">
 					<form method="post" action="pedDiario">
 					
-						<span>
-						    De: <input id="date" type="date" name="dataInicial" value="${dataInicial}" required>					
-							Até:   <input id="date" type="date" name="dataFinal" value="${dataFinal}" required>
+						
+						<span class="inline">
+							<select class="form-control" id="exampleFormControlSelect1" name="estado">
+								<option value="ENTRADA" ${ES}>ENTRADA</option>
+						   		<option value="FATURADO" ${FS}>FATURADO</option>
+						   		
+						   	</select>
+						
+						
+						</span>
+						<span class="inline">
+						  	<span class="inline">  De: <input  class="form-control" id="date" type="date" name="dataInicial" value="${dataInicial}" required>		</span>			
+							<span class="inline">	Até:   <input  class="form-control" id="date" type="date" name="dataFinal" value="${dataFinal}" required> </span>
+							
+								
 							
 							<input type="checkbox" class="form-check-input" value="checked" name="statusFaturado" ${checkFaturado} style="margin-left:20px;">
 							<label>Faturado</label>
@@ -28,8 +40,8 @@
 							<label>Aberto</label>
 							
 							<input class="btn btn-success" type="submit" name="operacao" value="Buscar" style="margin-left:10px;"/>
-								
-						</span>
+						</span>	
+						
 					
 					</form>
 				

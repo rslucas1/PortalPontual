@@ -29,10 +29,15 @@ public class JdbcPedidosDiario {
 	}
 	
 	
-	public List <PedidosDiario> pedidosDiarioGeral(String dataInicial, String dataFinal, String situacaoNota){
+	public List <PedidosDiario> pedidosDiarioGeral(String dataInicial, String dataFinal, String situacaoNota, String estado){
 		List <PedidosDiario> pedidosdiario = new ArrayList<>();
+		
+		System.out.println(estado);
 	
-		String sql = "select DISTINCT p.nu_ped, p.cd_vend, v.nome, c.cd_clien, c.nome AS 'desc', p.valor_tot ,  n.situacao, E.nome_fant, CONVERT(varchar(10),p.dt_cad,103) as dt_cad\r\n" + 
+		String sql = "";
+		
+		if(estado.equals("ENTRADA")) {
+			sql = "select DISTINCT p.nu_ped, p.cd_vend, v.nome, c.cd_clien, c.nome AS 'desc', p.valor_tot ,  n.situacao, E.nome_fant, CONVERT(varchar(10),p.dt_cad,103) as dt_cad\r\n" + 
 				"\r\n" + 
 				"from ped_vda p\r\n" + 
 				"\r\n" + 
@@ -58,8 +63,47 @@ public class JdbcPedidosDiario {
 				"   p.situacao NOT IN ('CA')  and p.cd_clien NOT IN (87379, 62379)" +
 					situacaoNota +
 					" order by 9 DESC";
+			
+		} else if(estado.equals("FATURADO")) {
+				
+			sql= "select DISTINCT \r\n" + 
+					"p.nu_ped,\r\n" + 
+					" p.cd_vend,\r\n" + 
+					"  v.nome, \r\n" + 
+					"  c.cd_clien,\r\n" + 
+					"   c.nome AS 'desc', \r\n" + 
+					"   --p.valor_tot,\r\n" + 
+					"   n.vl_tot_nf,\r\n" + 
+					"    n.situacao, \r\n" + 
+					"	 E.nome_fant, CONVERT(varchar(10),p.dt_cad,103) as dt_cad,\r\n" + 
+					"	 n.desc_nat_oper\r\n" + 
+					"\r\n" + 
+					"from ped_vda p\r\n" + 
+					"\r\n" + 
+					"join vendedor v\r\n" + 
+					"on p.cd_vend=v.cd_vend\r\n" + 
+					"\r\n" + 
+					"join cliente c\r\n" + 
+					"on c.cd_clien = p.cd_clien\r\n" + 
+					"JOIN EMPRESA E\r\n" + 
+					"on p.cd_emp=e.cd_emp\r\n" + 
+					"\r\n" + 
+					"--LEFT JOIN nota N \r\n" + 
+					"JOIN nota N\r\n" + 
+					"ON N.nu_ped = P.nu_ped AND N.cd_emp=P.cd_emp\r\n" + 
+					"where \r\n" + 
+					"	n.dt_emis BETWEEN '"+dataInicial+" 00:00:00' AND '"+dataFinal+" 23:59:59' AND \r\n" + 
+					"	n.desc_nat_oper NOT IN ('REM. BONIF/DOAÇÃO/BRINDE','REMESSA DE BONIFICACAO','DEVOL.FORNECEDOR FORA EST.','DEVOLUÇAO MERC SUJ SUBS.TRIBUT','BONIF/DOAÇÃO/BRINDE','DEVOLUÇÃO A FORNECEDOR','DEVOLUÇÃO MERC SUJ SUBST TRIB') and --INCLUIDO\r\n" + 
+					"	n.tipo_nf='S' AND n.situacao NOT IN ('CA') AND --INCLUIDO\r\n" + 
+					"	p.cd_emp IN (13, 20)  and\r\n" + 
+					"	p.tp_ped not in ('PE','NP', 'MD', 'VA','OP', 'RC', 'SP', 'CC') AND \r\n" + 
+					"	p.situacao NOT IN ('CA')  and p.cd_clien NOT IN (87379, 62379)\r\n" + 
+					"	order by 9 DESC";
+			
+				}
 		
-				System.out.println(sql);
+			System.out.println(sql);
+				
 		
 		try {
 			PreparedStatement stmt = (PreparedStatement) connection.prepareStatement(sql);
@@ -90,7 +134,7 @@ public class JdbcPedidosDiario {
 	}
 	
 	
-	public List <PedidosDiario> pedidosDiarioEquipe(List lista, String dataInicial, String dataFinal, String situacaoNota){
+	public List <PedidosDiario> pedidosDiarioEquipe(List lista, String dataInicial, String dataFinal, String situacaoNota, String estado){
 		
 		List<Vendedor> listaVendedores = new ArrayList<>();
 		listaVendedores=lista;
@@ -113,31 +157,74 @@ public class JdbcPedidosDiario {
 		
 		List <PedidosDiario> pedidosdiario = new ArrayList<>();
 				
-		String sql = "select DISTINCT p.nu_ped, p.cd_vend, v.nome, c.cd_clien, c.nome AS 'desc', p.valor_tot , n.situacao,E.nome_fant, CONVERT(varchar(10),p.dt_cad,103) as dt_cad\r\n" + 
-				"\r\n" + 
-				"from ped_vda p\r\n" + 
-				"\r\n" + 
-				"join vendedor v\r\n" + 
-				"on p.cd_vend=v.cd_vend\r\n" + 
-				"\r\n" + 
-				"join cliente c\r\n" + 
-				"on c.cd_clien = p.cd_clien\r\n" +
+		String sql = "";
+		
+				if(estado.equals("ENTRADA")) {
 				
-				"JOIN EMPRESA E\r\n" + 
-				"on p.cd_emp=e.cd_emp\r\n"+
-
-				"LEFT JOIN nota N \r\n" + 
-				"ON N.nu_ped = P.nu_ped AND N.cd_emp=P.cd_emp\r\n"+
-				
-				"\r\n" + 
-				"where \r\n" + 
-				"	p.cd_vend IN ("+inVendedores+") and \r\n" + 
-				"	p.dt_cad BETWEEN '"+dataInicial+" 00:00:00' AND '"+dataFinal+" 23:59:59' AND \r\n" + 
-				"	p.cd_emp IN (13, 20)  and\r\n" + 
-				"	p.tp_ped not in ('PE','NP', 'MD', 'VA','OP', 'RC', 'SP', 'CC') AND \r\n" + 
-				"   p.situacao NOT IN ('CA')  and p.cd_clien NOT IN (87379, 62379)"+
-				situacaoNota +
-				" order by 9 DESC";
+					sql ="select DISTINCT p.nu_ped, p.cd_vend, v.nome, c.cd_clien, c.nome AS 'desc', p.valor_tot , n.situacao,E.nome_fant, CONVERT(varchar(10),p.dt_cad,103) as dt_cad\r\n" + 
+					"\r\n" + 
+					"from ped_vda p\r\n" + 
+					"\r\n" + 
+					"join vendedor v\r\n" + 
+					"on p.cd_vend=v.cd_vend\r\n" + 
+					"\r\n" + 
+					"join cliente c\r\n" + 
+					"on c.cd_clien = p.cd_clien\r\n" +
+					
+					"JOIN EMPRESA E\r\n" + 
+					"on p.cd_emp=e.cd_emp\r\n"+
+	
+					"LEFT JOIN nota N \r\n" + 
+					"ON N.nu_ped = P.nu_ped AND N.cd_emp=P.cd_emp\r\n"+
+					
+					"\r\n" + 
+					"where \r\n" + 
+					"	p.cd_vend IN ("+inVendedores+") and \r\n" + 
+					"	p.dt_cad BETWEEN '"+dataInicial+" 00:00:00' AND '"+dataFinal+" 23:59:59' AND \r\n" + 
+					"	p.cd_emp IN (13, 20)  and\r\n" + 
+					"	p.tp_ped not in ('PE','NP', 'MD', 'VA','OP', 'RC', 'SP', 'CC') AND \r\n" + 
+					"   p.situacao NOT IN ('CA')  and p.cd_clien NOT IN (87379, 62379)"+
+					situacaoNota +
+					" order by 9 DESC";
+				} else if(estado.equals("FATURADO")) {
+					
+					sql= "select DISTINCT \r\n" + 
+							"p.nu_ped,\r\n" + 
+							" p.cd_vend,\r\n" + 
+							"  v.nome, \r\n" + 
+							"  c.cd_clien,\r\n" + 
+							"   c.nome AS 'desc', \r\n" + 
+							"   --p.valor_tot,\r\n" + 
+							"   n.vl_tot_nf,\r\n" + 
+							"    n.situacao, \r\n" + 
+							"	 E.nome_fant, CONVERT(varchar(10),p.dt_cad,103) as dt_cad,\r\n" + 
+							"	 n.desc_nat_oper\r\n" + 
+							"\r\n" + 
+							"from ped_vda p\r\n" + 
+							"\r\n" + 
+							"join vendedor v\r\n" + 
+							"on p.cd_vend=v.cd_vend\r\n" + 
+							"\r\n" + 
+							"join cliente c\r\n" + 
+							"on c.cd_clien = p.cd_clien\r\n" + 
+							"JOIN EMPRESA E\r\n" + 
+							"on p.cd_emp=e.cd_emp\r\n" + 
+							"\r\n" + 
+							"--LEFT JOIN nota N \r\n" + 
+							"JOIN nota N\r\n" + 
+							"ON N.nu_ped = P.nu_ped AND N.cd_emp=P.cd_emp\r\n" + 
+							"where \r\n" + 
+							"	p.cd_vend IN ("+inVendedores+") and \r\n" + 
+							"	n.dt_emis BETWEEN '"+dataInicial+" 00:00:00' AND '"+dataFinal+" 23:59:59' AND \r\n" + 
+							"	n.desc_nat_oper NOT IN ('REM. BONIF/DOAÇÃO/BRINDE','REMESSA DE BONIFICACAO','DEVOL.FORNECEDOR FORA EST.','DEVOLUÇAO MERC SUJ SUBS.TRIBUT','BONIF/DOAÇÃO/BRINDE','DEVOLUÇÃO A FORNECEDOR','DEVOLUÇÃO MERC SUJ SUBST TRIB') and --INCLUIDO\r\n" + 
+							"	n.tipo_nf='S' AND n.situacao NOT IN ('CA') AND --INCLUIDO\r\n" + 
+							"	p.cd_emp IN (13, 20)  and\r\n" + 
+							"	p.tp_ped not in ('PE','NP', 'MD', 'VA','OP', 'RC', 'SP', 'CC') AND \r\n" + 
+							"	p.situacao NOT IN ('CA')  and p.cd_clien NOT IN (87379, 62379)\r\n" + 
+							"	order by 9 DESC";
+					
+					
+				}
 		
 				System.out.println(sql);
 		

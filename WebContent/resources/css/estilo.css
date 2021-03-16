@@ -462,3 +462,15 @@ main {
 	background-color: #08088A;
 	
 }
+
+.colunaDivergencia {
+	color: RED;
+}
+
+.colunaErp {
+	background-color: #DCDCDC;
+}
+
+.colunaWMS {
+	background-color: #DCDCDC;
+}
