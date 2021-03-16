@@ -18,8 +18,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import br.com.lucasdev.dao.ConnectionFactory;
 import br.com.lucasdev.dao.JdbcClienteXIndustria;
+import br.com.lucasdev.dao.JdbcConfrontoEstoque;
 import br.com.lucasdev.dao.JdbcConsultaCliente;
 import br.com.lucasdev.dao.JdbcDesempenhoDiario;
+import br.com.lucasdev.dao.JdbcDespesas;
 import br.com.lucasdev.dao.JdbcEtapaPedido;
 import br.com.lucasdev.dao.JdbcExpedicaoCarregamento;
 import br.com.lucasdev.dao.JdbcGerencial;
@@ -46,6 +48,7 @@ import br.com.lucasdev.modelo.relatorios.Categoria;
 import br.com.lucasdev.modelo.relatorios.CodDescricao;
 import br.com.lucasdev.modelo.relatorios.ColunasMesesBody;
 import br.com.lucasdev.modelo.relatorios.ColunasMesesHead;
+import br.com.lucasdev.modelo.relatorios.ConfrontoEstoque;
 import br.com.lucasdev.modelo.relatorios.DescontoFinanceiro;
 import br.com.lucasdev.modelo.relatorios.DesempenhoDiario;
 import br.com.lucasdev.modelo.relatorios.Equipe;
@@ -58,6 +61,7 @@ import br.com.lucasdev.modelo.relatorios.PedidoProducao;
 import br.com.lucasdev.modelo.relatorios.PedidosDiario;
 import br.com.lucasdev.modelo.relatorios.PlanilhaDeSetores;
 import br.com.lucasdev.modelo.relatorios.ProdNaoVendidos;
+import br.com.lucasdev.modelo.relatorios.RelatorioDespesa;
 import br.com.lucasdev.modelo.relatorios.Romaneio;
 import br.com.lucasdev.modelo.relatorios.Segmento;
 import br.com.lucasdev.modelo.relatorios.Tracking;
@@ -77,10 +81,12 @@ public class PortalController {
 	@RequestMapping(value = {"/index", "/", ""})
 	public String index() {
 		  
-		LocalDate dtInit = LocalDate.parse("2020-07-27");
+		LocalDate dtInit = LocalDate.parse("2021-01-01");
 		LocalDate hoje = LocalDate.now();
+		System.out.println(dtInit.plusDays(90));
 			 
-		if(hoje.isAfter(dtInit.plusDays(180))) {
+		if(hoje.isAfter(dtInit.plusDays(90))) {
+			
 			
 			try {
 				
@@ -97,7 +103,7 @@ public class PortalController {
 			String teste;
 			
 //			teste = new TesteOracle().exec();
-			System.out.println("licença valida OK 1234");
+			System.out.println("L V - OK");
 			return "index";
 		}
 		
@@ -517,12 +523,15 @@ public class PortalController {
 			String faturado;
 			String aberto;
 			
+			
+			
 			if(request.getParameter("operacao")==null) {
 				model.addAttribute("logado", sessaoUsuario);
 				model.addAttribute("dataInicial", hoje);
 				model.addAttribute("dataFinal", hoje);
 				model.addAttribute("checkFaturado", "checked");
 				model.addAttribute("checkAberto", "checked");
+				
 				
 				return "pedidosDiario";
 								
@@ -533,10 +542,20 @@ public class PortalController {
 				faturado = request.getParameter("statusFaturado");
 				aberto = request.getParameter("statusAberto");
 				
+				
 				model.addAttribute("dataInicial", dataInicial);
 				model.addAttribute("dataFinal", dataFinal);
 				model.addAttribute("checkFaturado", faturado);
 				model.addAttribute("checkAberto", aberto);
+				
+								
+				if(request.getParameter("estado").equals("ENTRADA")) {
+					model.addAttribute("ES", "selected");
+				} else if(request.getParameter("estado").equals("FATURADO")){
+					model.addAttribute("FS", "selected");
+				}
+				
+				
 				
 				System.out.println(dataInicial);
 				System.out.println(dataFinal);
@@ -561,17 +580,18 @@ public class PortalController {
 			
 				List <PedidosDiario> pedidosdiario = new ArrayList<>();
 				
+							
 				if(sessaoUsuario.getPerfil().equals("DIRETORIA") ||sessaoUsuario.getPerfil().equals("COMERCIAL")
 						||sessaoUsuario.getPerfil().equals("ADMINISTRADOR")) {
-						pedidosdiario = new JdbcPedidosDiario().pedidosDiarioGeral(dataInicial,dataFinal, situacaoNota);
+						pedidosdiario = new JdbcPedidosDiario().pedidosDiarioGeral(dataInicial,dataFinal, situacaoNota, request.getParameter("estado"));
 								
 				}else if(sessaoUsuario.getPerfil().equals("GERENTE")) {
 					listaVendedores = new JdbcHierarquia().getEquipeVendedoresGerente(sessaoUsuario.getCd_target());
-					pedidosdiario = new JdbcPedidosDiario().pedidosDiarioEquipe(listaVendedores, dataInicial,dataFinal, situacaoNota);
+					pedidosdiario = new JdbcPedidosDiario().pedidosDiarioEquipe(listaVendedores, dataInicial,dataFinal, situacaoNota, request.getParameter("estado"));
 	
 				}else if(sessaoUsuario.getPerfil().equals("SUPERVISOR")) {
 					listaVendedores = new JdbcHierarquia().getEquipeVendedoresSupervisor(sessaoUsuario.getCd_target());
-					pedidosdiario = new JdbcPedidosDiario().pedidosDiarioEquipe(listaVendedores, dataInicial,dataFinal, situacaoNota);
+					pedidosdiario = new JdbcPedidosDiario().pedidosDiarioEquipe(listaVendedores, dataInicial,dataFinal, situacaoNota, request.getParameter("estado"));
 				}else if(sessaoUsuario.getPerfil().equals("VENDEDOR")) {
 					model.addAttribute("logado", sessaoUsuario);	
 					return "homePage";
@@ -1619,7 +1639,7 @@ public class PortalController {
 				Tracking expedicao = new Tracking();
 				String mensagemExpedicao1="";
 				
-				
+				System.err.println(request.getParameter("operacao"));
 				
 				
 				if(request.getParameter("operacao")!=null) {
@@ -1708,6 +1728,18 @@ public class PortalController {
 						return "tracking/expedicao";
 						
 					}
+					else {
+						
+						System.err.println("exec o else, e enviando o parametro"+request.getParameter("operacao"));
+						List<PedidosDiario> detalhePedido = new ArrayList<>();
+						
+						detalhePedido = new JdbcTracking().detalhaPedidos(request.getParameter("operacao"));
+						
+						model.addAttribute("detalhePedido", detalhePedido);
+						
+						return "detalhePedidos";
+						
+					}
 				}
 				
 				pendEle = new JdbcTracking().trkPendenciaEletronica();
@@ -1772,6 +1804,7 @@ public class PortalController {
 			
 			return "redirect:tracking";
 			
+			
 		}else {
 			System.out.println("EXECUTANDO O ELSE ");
 			agendamento = new JdbcTracking().agendamento(agendaEntrega.getNuPed(), request.getParameter("data"), sessaoUsuario.getNome(),request.getParameter("texto"),"detalhaAgendamento");
@@ -1834,6 +1867,95 @@ public class PortalController {
 		
 		return "tracking/roteiros";
 	}
+	
+	
+	@RequestMapping("/despesas")
+	public String analiseDespesa(Usuario usuario, HttpSession session, Model model, HttpServletRequest request) {
+		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
+		model.addAttribute("logado", sessaoUsuario);
+		
+//		if(sessaoUsuario != null) {
+//			
+//					
+//			
+//			
+//		}
+
+				
+		return "despesas/despesas";
+	}
+	
+	
+	
+	@RequestMapping("/DespesaFornecedor")
+	public String DespesaFornecedor(Usuario usuario, HttpSession session, Model model, HttpServletRequest request, TrackingExpedicao agendaEntrega ) {
+		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
+		model.addAttribute("logado", sessaoUsuario);
+		
+		if(sessaoUsuario != null) {
+			
+			List<RelatorioDespesa> fornecedores = new ArrayList<>();
+			
+			fornecedores = new JdbcDespesas().getFornecedores();
+			model.addAttribute("fornecedores", fornecedores);
+			
+		}
+
+			
+		
+		return "despesas/config";
+	}
+	
+	
+	@RequestMapping("/confrontoEstoque")
+	public String ConfrontoEstoque(Usuario usuario, HttpSession session, Model model, HttpServletRequest request, TrackingExpedicao agendaEntrega ) {
+		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
+		model.addAttribute("logado", sessaoUsuario);
+		
+		if(sessaoUsuario != null) {
+			
+			List<ConfrontoEstoque> estoque = new ArrayList<>();
+			
+			boolean divergente = false;
+			
+			if(request.getParameter("divertente")!=null) {
+								
+				divergente=true;
+			}
+			
+			estoque = new JdbcConfrontoEstoque().ConfrontoEstoque(divergente);
+			
+			System.out.println(request.getParameter("divertente"));
+			
+			model.addAttribute("estoque", estoque);
+			
+						
+		}
+
+			
+		
+		return "estoque/analise";
+	}
+	
+	
+	
+	@RequestMapping("/detalhaPedidos")
+	public String detalhaPedidos(Usuario usuario, HttpSession session, Model model, HttpServletRequest request, TrackingExpedicao agendaEntrega ) {
+		Usuario sessaoUsuario = (Usuario) session.getAttribute("usuarioLogado");
+		model.addAttribute("logado", sessaoUsuario);
+		
+		if(sessaoUsuario != null) {
+			
+			
+			
+						
+		}
+
+			
+		
+		return "estoque/analise";
+	}
+	
 	
 }//FIM CONTROLLER
 

@@ -135,7 +135,7 @@ public class JdbcObjetivoVendedor {
 					"ON n.nu_nf = it.nu_nf\r\n" + 
 					"\r\n" + 
 					"JOIN ped_vda p\r\n" + 
-					"ON p.nu_ped = n.nu_ped\r\n" + 
+					"ON p.nu_ped = n.nu_ped AND p.cd_emp=n.cd_emp\r\n" + 
 					"\r\n" + 
 					"JOIN tp_ped tp\r\n" + 
 					"on tp.tp_ped = p.tp_ped\r\n" + 
@@ -147,10 +147,14 @@ public class JdbcObjetivoVendedor {
 					"	n.situacao IN ('AB', 'DP')\r\n" + 
 					"	AND	n.tipo_nf = 'S' \r\n" + 
 					"	AND	n.cd_emp  IN (13, 20)\r\n" + 
-					"	AND	tp.tp_ped IN ('BE', 'BF', 'BS', 'TR', 'VC', 'VE', 'VP', 'VS', 'BP', 'BI', 'VB', 'SR','AS','IP','SL')\r\n" + 
-					"	AND n.dt_emis  BETWEEN '"+dataInicial+" 00:00:00' and '"+dataFinal+" 00:00:00'	\r\n" + 
+					"	AND p.situacao NOT IN ('CA') " +
+					"	--AND	tp.tp_ped IN ('BE', 'BF', 'BS', 'TR', 'VC', 'VE', 'VP', 'VS', 'BP', 'BI', 'VB', 'SR','AS','IP','SL')\r\n" + 
+					"	AND p.tp_ped not in ('PE','NP', 'MD', 'VA','OP', 'RC', 'SP', 'CC')"+
+					"	AND n.dt_emis  BETWEEN '"+dataInicial+" 00:00:00' and '"+dataFinal+" 23:59:00'	\r\n" + 
 					"\r\n" + 
 					"group by p.cd_vend"; 
+			
+			System.out.println("***********"+vlfaturado);
 			
 			String ped_ab ="select  \r\n" + 
 					"p.cd_vend Vendedor,\r\n" + 

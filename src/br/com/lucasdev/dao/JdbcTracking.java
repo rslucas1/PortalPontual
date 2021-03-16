@@ -157,6 +157,8 @@ public class JdbcTracking {
 					"ORDER BY 1 ASC";
 			
 			
+			
+			
 			try {
 				PreparedStatement stmt1 = (PreparedStatement) connectionSqlServerErp.prepareStatement(sqlTotal);
 				ResultSet rs1 = stmt1.executeQuery();
@@ -259,6 +261,8 @@ public class JdbcTracking {
 						"and ev.cd_fila IN ('BLOQ','CRED')\r\n" + 
 						"\r\n" + 
 						"ORDER BY 1 ASC";
+				
+				System.out.println(sqlTotal);
 				
 				
 				try {
@@ -485,7 +489,7 @@ public class JdbcTracking {
 	public Tracking trkFaturamento() {
 		Tracking registro = new Tracking();
 		
-		String sqlTotal ="SELECT COUNT (NR_AUF), SUM(WERT_NACHN) FROM AUFTRAEGE WHERE  STAT IN (75) AND HINW_ZUST IS NULL AND ART_EING != 'MAN' AND NR_AUF NOT IN ('940587','495','716')";
+		String sqlTotal ="SELECT COUNT (NR_AUF), SUM(WERT_NACHN) FROM AUFTRAEGE WHERE  STAT IN (75) AND HINW_ZUST IS NULL AND ART_EING != 'MAN' AND NR_AUF NOT IN ('940587','495','716','838','1301','1290', '1300', '1486','962358', '962359', '962366', '962368', '962369', '962355', '1504','962834')";
 		
 //		String sqlTotal ="select DISTINCT\r\n" + 
 //				"COUNT(p.nu_ped) AS 'QTD',\r\n" + 
@@ -509,7 +513,7 @@ public class JdbcTracking {
 		
 	
 		
-		String sqlUltPed ="SELECT * FROM (SELECT DATUM_BESTELL FROM AUFTRAEGE WHERE  STAT IN (75)  AND HINW_ZUST IS NULL AND ART_EING != 'MAN' AND NR_AUF NOT IN ('940587','495','716') ORDER BY DATUM_BESTELL ASC ) WHERE ROWNUM=1";
+		String sqlUltPed ="SELECT * FROM (SELECT DATUM_BESTELL FROM AUFTRAEGE WHERE  STAT IN (75)  AND HINW_ZUST IS NULL AND ART_EING != 'MAN' AND NR_AUF NOT IN ('940587','495','716','838','962834') ORDER BY DATUM_BESTELL ASC ) WHERE ROWNUM=1";
 		
 //		String sqlUltPed="select DISTINCT TOP 1\r\n" + 
 //				"CONVERT(VARCHAR(10), p.dt_cad, 103) AS 'ULTIMO PEDIDO',\r\n" + 
@@ -545,10 +549,10 @@ public class JdbcTracking {
 				registro.setQtdPedido(rs1.getInt(1));
 				registro.setValor(rs1.getDouble(2));
 				registro.setValorMoeda(Formata.moeda(registro.getValor()));					
-//				if(rs2.next()) {
-//				registro.setUltPed(Formata.data(rs2.getString(1).substring(0, 10)));
+				if(rs2.next()) {
+				registro.setUltPed(Formata.data(rs2.getString(1).substring(0, 10)));
 				
-//				}
+				}
 			} else {
 				
 				registro.setQtdPedido(0);
@@ -572,9 +576,6 @@ public class JdbcTracking {
 		}catch(SQLException e) {
 				throw new RuntimeException(e);
 		}
-		
-		
-	
 		
 		
 		return registro;
@@ -986,5 +987,208 @@ public class JdbcTracking {
 //		return registro;
 //	}
  	
+	
+	
+	public List<PedidosDiario> detalhaPedidos(String operacao){
+		 List<PedidosDiario> filaPedidos = new ArrayList<>();
+		 
+		 List<String> pedidos = new ArrayList<>();
+		 String consultaPedidos ="";
+		 
+		 if(operacao.equals("op_eletronico")) {
+			 consultaPedidos ="	select\r\n" + 
+			 		"		e.nome_fant,\r\n" + 
+			 		"		p.nu_ped_ele,\r\n" + 
+			 		"		p.cd_vend,\r\n" + 
+			 		"		p.cd_clien,\r\n" + 
+			 		"		c.nome,\r\n" + 
+			 		"		convert(varchar(10), p.dt_ped, 103) as 'dt',\r\n" + 
+			 		"		p.valor_tot\r\n" + 
+			 		"	\r\n" + 
+			 		"	from ped_vda_ele p\r\n" + 
+			 		"\r\n" + 
+			 		"	join empresa e\r\n" + 
+			 		"	ON e.cd_emp=p.cd_emp_ele\r\n" + 
+			 		"\r\n" + 
+			 		"	join cliente c\r\n" + 
+			 		"	ON c.cd_clien=p.cd_clien\r\n" + 
+			 		"\r\n" + 
+			 		"	WHERE cd_emp_ele IN (13,20) \r\n" + 
+			 		"	AND p.situacao IN ('ab')\r\n" + 
+			 		"	AND pend_ele_libera_auto IS NULL";
+			 
+		 }else if(operacao.equals("op_comercial")) {
+			 consultaPedidos ="select distinct \r\n" + 
+			 		"	e.nome_fant,\r\n" + 
+			 		"    ev.nu_ped Pedido,\r\n" + 
+			 		"	p.cd_vend,\r\n" + 
+			 		"	p.cd_clien,\r\n" + 
+			 		"	cl.nome,\r\n" + 
+			 		"	convert(varchar(10), p.dt_cad,103) as 'dt',\r\n" + 
+			 		"	p.valor_tot\r\n" + 
+			 		"\r\n" + 
+			 		"from evento ev\r\n" + 
+			 		"join cliente cl on cl.cd_clien = ev.cd_clien\r\n" + 
+			 		"join ped_vda p on p.nu_ped = ev.nu_ped and ev.cd_clien = p.cd_clien and ev.cd_emp = p.cd_emp\r\n" + 
+			 		"join fila f on f.cd_fila = ev.cd_fila\r\n" + 
+			 		"join empresa e on e.cd_emp=p.cd_emp\r\n" + 
+			 		"\r\n" + 
+			 		"where  \r\n" + 
+			 		"--ev.nu_ped=961691 and\r\n" + 
+			 		"ev.situacao = 'AB' \r\n" + 
+			 		"and ev.dt_criacao> '2020-11-01 00:00:00'\r\n" + 
+			 		"and ev.cd_emp IN (13, 20) \r\n" + 
+			 		"and p.tp_ped not in ('PE','NP', 'MD', 'VA','OP', 'RC', 'SP', 'CC')\r\n" + 
+			 		"and ev.cd_fila IN ('BLGV','GERV', 'ADMV', 'ALTP', 'BLAV' , 'CAPV')";
+		 }else if(operacao.equals("op_credito")) {
+			 consultaPedidos ="select distinct \r\n" + 
+			 		"	e.nome_fant,\r\n" + 
+			 		"    ev.nu_ped Pedido,\r\n" + 
+			 		"	p.cd_vend,\r\n" + 
+			 		"	p.cd_clien,\r\n" + 
+			 		"	cl.nome,\r\n" + 
+			 		"	convert(varchar(10), p.dt_cad,103) as 'dt',\r\n" + 
+			 		"	p.valor_tot\r\n" + 
+			 		"\r\n" + 
+			 		"from evento ev\r\n" + 
+			 		"join cliente cl on cl.cd_clien = ev.cd_clien\r\n" + 
+			 		"join ped_vda p on p.nu_ped = ev.nu_ped and ev.cd_clien = p.cd_clien and ev.cd_emp = p.cd_emp\r\n" + 
+			 		"join fila f on f.cd_fila = ev.cd_fila\r\n" + 
+			 		"join empresa e on e.cd_emp=p.cd_emp\r\n" + 
+			 		"\r\n" + 
+			 		"where  \r\n" + 
+			 		"--ev.nu_ped=961691 and\r\n" + 
+			 		"ev.situacao = 'AB' \r\n" + 
+			 		"and ev.dt_criacao> '2020-11-01 00:00:00'\r\n" + 
+			 		"and ev.cd_emp IN (13, 20) \r\n" + 
+			 		"and p.tp_ped not in ('PE','NP', 'MD', 'VA','OP', 'RC', 'SP', 'CC')\r\n" + 
+			 		"and ev.cd_fila IN ('BLOQ','CRED')";
+			 
+			 
+			 
+		 }
+		 
+		 
+		 
+		 
+		 else if(operacao.equals("op_roteirizacao")||operacao.equals("op_reserva")||operacao.equals("op_separacao")||operacao.equals("op_faturamento")) {
+			 
+			 String nuped=buscaPedidosWms(operacao);
+			 System.err.println("NU PED:"+nuped);
+			 
+		
+			 
+			 consultaPedidos ="select  e.nome_fant, p.nu_ped, p.cd_vend, p.cd_clien, c.nome ,convert(varchar(10), p.dt_cad, 103) as 'dt', p.valor_tot from ped_vda p\r\n" + 
+			 		"\r\n" + 
+			 		"join empresa e\r\n" + 
+			 		"on e.cd_emp=p.cd_emp\r\n" + 
+			 		"\r\n" + 
+			 		"join cliente c\r\n" + 
+			 		"on c.cd_clien=p.cd_clien\r\n" + 
+			 		"\r\n" + 
+			 		"where p.nu_ped in ("+nuped+")\r\n" + 
+			 		"\r\n" + 
+			 		"and p.dt_cad>'2021-01-01 00:00:00'";
+			 
+			 
+		 }
+			 
+			 System.out.println(consultaPedidos);
+			 
+		 
+		 try {
+				PreparedStatement stmt_verifica = (PreparedStatement) connectionSqlServerErp.prepareStatement(consultaPedidos);
+				ResultSet rs_1 = stmt_verifica.executeQuery();
+				
+				
+				
+				while(rs_1.next()) {
+					PedidosDiario registro = new PedidosDiario();
+					registro.setEmpresa(rs_1.getString(1));
+					registro.setNumPedido(rs_1.getInt(2));
+					registro.setCdVendedor(rs_1.getString(3));
+					registro.setDesc_cliente(rs_1.getString(4)+" - "+rs_1.getString(5));
+					registro.setDataPedido(rs_1.getString(6));
+					registro.setValor(rs_1.getDouble(7));
+					
+					filaPedidos.add(registro);
+				}
+				
+		
+				
+			}catch(SQLException e) {
+				throw new RuntimeException(e);
+			}
+		 
+		 	 
+		 	return filaPedidos;
+		 }
+		 
+		
+	
+	
+	
+	public String buscaPedidosWms(String operacao) {
+		
+		String pedidos="";;
+		
+		String consultaWms="";
+		
+		if (operacao.equals("op_roteirizacao")) {
+			
+			consultaWms="SELECT NR_AUF FROM AUFTRAEGE WHERE  STAT IN (10, 15, 25)";
+		
+		}else if(operacao.equals("op_reserva")) {
+			
+			consultaWms="SELECT NR_AUF FROM AUFTRAEGE WHERE  STAT IN (35)";
+								
+		 }else if(operacao.equals("op_separacao")) {
+			 
+			 consultaWms="SELECT NR_AUF FROM AUFTRAEGE WHERE  STAT IN (54,55,74) AND ART_EING != 'MAN'";
+			 
+		 }else if(operacao.equals("op_faturamento")) {
+			 
+			 consultaWms="SELECT NR_AUF FROM AUFTRAEGE WHERE  STAT IN (75) AND HINW_ZUST IS NULL AND ART_EING != 'MAN' "
+			 		+ "AND NR_AUF NOT IN ('940587','495','716','838','1301','1290', '1300', '1486','962358', '962359', '962366', '962368', '962369', '962355', '1504','962834')";
+			 
+		 }
+		
+		
+		System.err.println(consultaWms);
+		
+		try {
+			PreparedStatement stmt_verifica = (PreparedStatement) connectionOracle.prepareStatement(consultaWms);
+			ResultSet rs_1 = stmt_verifica.executeQuery();
+			
+			
+			
+			while(rs_1.next()) {
+				pedidos += rs_1.getString(1) +", ";
+		
+			}
+			
+			if(pedidos.length()>4) {
+				
+				System.out.println(pedidos.length());
+					
+				System.out.println("A"+pedidos);
+				pedidos = pedidos.substring(0, pedidos.length() - 2);
+				System.out.println("D"+pedidos);
+			}else {
+				pedidos="0";
+				
+			}
+			
+		}catch(SQLException e) {
+			throw new RuntimeException(e);
+		}
+		
+	
+			
+			return pedidos;
+	
+		
+		
+	}
 	
 }

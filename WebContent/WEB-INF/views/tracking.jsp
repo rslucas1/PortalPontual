@@ -32,32 +32,32 @@
 			<div class="linha-detcli">
 				<div class="inline">
 					<div class="btn-etapa-pedidos"><b> PED. ELETRÔNICOS</b><hr>${pendEle.qtdPedido} PEDIDOS<br> ${pendEle.valorMoeda} <br>${pendEle.ultPed}
-						<input class="btn-etapa-pedidos-input" type="submit" name="operacao" value=" "/>
+						<input class="btn-etapa-pedidos-input" type="submit" name="operacao" value="op_eletronico"/>
 					</div>
 				</div>
 				
 				<div class="inline">
 					<div class="btn-etapa-pedidos"><b> ADM. COMERCIAL</b><hr>${administracao.qtdPedido} PEDIDOS<br>${administracao.valorMoeda}<br>${administracao.ultPed}
-						<input class="btn-etapa-pedidos-input" type="submit" name="operacao" value=" "/>
+						<input class="btn-etapa-pedidos-input" type="submit" name="operacao" value="op_comercial"/>
 					</div>
 				</div>
 				
 				<div class="inline">
 					<div class="btn-etapa-pedidos"><b> CRÉDITO</b><hr>${credito.qtdPedido} PEDIDOS<br> ${credito.valorMoeda} <br>${credito.ultPed}
-						<input class="btn-etapa-pedidos-input" type="submit" name="operacao" value=" "/>
+						<input class="btn-etapa-pedidos-input" type="submit" name="operacao" value="op_credito"/>
 					</div>
 				</div>
 				
 				
 				<div class="inline">
 					<div class="btn-etapa-pedidos"><b> ROTEIRIZAÇÃO</b><hr>${roteirizacao.qtdPedido} PEDIDOS<br> ${roteirizacao.valorMoeda} <br>${roteirizacao.ultPed}
-						<input class="btn-etapa-pedidos-input" type="submit" name="operacao" value=" "/>
+						<input class="btn-etapa-pedidos-input" type="submit" name="operacao" value="op_roteirizacao"/>
 					</div>
 				</div>
 				
 				<div class="inline">
 					<div class="btn-etapa-pedidos"><b> RESERVA</b><hr>${reserva.qtdPedido} PEDIDOS<br> ${reserva.valorMoeda} <br>${reserva.ultPed}
-						<input class="btn-etapa-pedidos-input" type="submit" name="operacao" value=" "/>
+						<input class="btn-etapa-pedidos-input" type="submit" name="operacao" value="op_reserva"/>
 					</div>
 				</div>
 					
@@ -66,16 +66,16 @@
 			</div>	
 			
 			
-						<div class="linha-detcli">
+			<div class="linha-detcli">
 				<div class="inline">
 					<div class="btn-etapa-pedidos"><b> SEPARAÇÃO</b><hr>${separacao.qtdPedido} PEDIDOS<br> ${separacao.valorMoeda} <br>${separacao.ultPed}
-						<input class="btn-etapa-pedidos-input" type="submit" name="operacao" value=" "/>
+						<input class="btn-etapa-pedidos-input" type="submit" name="operacao" value="op_separacao"/>
 					</div>
 				</div>
 				
 				<div class="inline">
 					<div class="btn-etapa-pedidos"><b> FATURAMENTO</b><hr>${faturamento.qtdPedido} PEDIDOS<br> ${faturamento.valorMoeda} <br>${faturamento.ultPed}
-						<input class="btn-etapa-pedidos-input" type="submit" name="operacao" value=" "/>
+						<input class="btn-etapa-pedidos-input" type="submit" name="operacao" value="op_faturamento"/>
 					</div>
 				</div>
 				
